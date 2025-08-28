@@ -1,0 +1,63 @@
+---
+title: "Unión de archivos en un solo dataframe"
+format:
+   html:
+     toc: true
+     html-math-method: katex
+     embed-resources: true
+     self-contained-math: true
+     df-print: kable
+---
+
+
+## Variables de interés
+
+De acuerdo con las queries que nos tocaron, las variables de interés son:
+
+* Sexo
+* Tipo de transporte que se utiliza (público o privado)
+* Cantidad de carros
+* Edad
+* Estatus sociodemográfico
+* Día en el que se viaja
+* Horario en el que se viaja (en horas pico o no pico)
+
+### Lectura de datos
+
+Los datos de las encuestas se encuentran en 5 archivos separados, que contienen datos de la vivienda, del viaje, del transporte, del estrato sociodemográfico y del hogar. Estos los leemos para unir de manera posterior los datos que necesitamos en un mismo archivo.
+
+```{r}
+library(tidyverse)
+
+vivienda = read.csv("eod_2017_csv/tvivienda_eod2017/conjunto_de_datos/tvivienda.csv")
+viaje = read.csv("eod_2017_csv/tviaje_eod2017/conjunto_de_datos/tviaje.csv")
+transporte = read.csv("eod_2017_csv/ttransporte_eod2017/conjunto_de_datos/ttransporte.csv")
+sociodem = read.csv("eod_2017_csv/tsdem_eod2017/conjunto_de_datos/tsdem.csv")
+hogar = read.csv("eod_2017_csv/thogar_eod2017/conjunto_de_datos/thogar.csv")
+```
+
+### Unión de los dataframes
+
+En la variable *df* estaremos guardando las variables de interés para las primeras 3 queries.
+
+```{r}
+df = unique(viaje[c("id_soc", "sexo", "edad")])
+
+# unión de viaje con transporte en dataframe temporal
+df_temp = right_join(viaje[c("id_via", "id_soc")], transporte[c("id_via", "p5_3", "p5_14")], "id_via")
+df_temp = right_join(df, df_temp, "id_soc")
+df_temp$transporte_pub = df_temp$p5_14 %in% c(2, 5, 6, 8, 10, 11, 12, 13, 15)
+df_temp$transporte_priv = df_temp$p5_14 %in% c(1, 3, 4, 7, 9, 14, 16, 17, 18, 19)
+df_temp$viaje_entre_sem = df_temp$p5_3 == 1
+df_temp$viaje_fin_de_sem = df_temp$p5_3 == 2
+
+df$transporte_pub = right_join(df, aggregate(df_temp$transporte_pub, by = list(id_soc = df_temp$id_soc), FUN=sum), "id_soc")$x
+
+df$transporte_priv = right_join(df, aggregate(df_temp$transporte_priv, by = list(id_soc = df_temp$id_soc), FUN=sum), "id_soc")$x
+
+df$viaje_entre_sem = right_join(df, aggregate(df_temp$viaje_entre_sem, by = list(id_soc=df_temp$id_soc), FUN=sum), "id_soc")$x
+
+df$viaje_fin_de_sem = right_join(df, aggregate(df_temp$viaje_fin_de_sem, by = list(id_soc=df_temp$id_soc), FUN=sum), "id_soc")$x
+
+df = df[-c("id_soc")]
+```
