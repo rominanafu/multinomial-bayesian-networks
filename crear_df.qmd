@@ -36,12 +36,21 @@ sociodem = read.csv("eod_2017_csv/tsdem_eod2017/conjunto_de_datos/tsdem.csv")
 hogar = read.csv("eod_2017_csv/thogar_eod2017/conjunto_de_datos/thogar.csv")
 ```
 
-### Unión de los dataframes
-
-En la variable *df* estaremos guardando las variables de interés para las primeras 3 queries.
+#### Dataframe queries 1 y 2
 
 ```{r}
 df = unique(viaje[c("id_soc", "sexo", "edad")])
+
+# Renombrar sexo a partir del catalogo
+sexos = read.csv("eod_2017_csv/tviaje_eod2017/catalogos/sexo.csv")
+df$sexo = factor(df$sexo, labels=sexos$descrip)
+
+# Agrupar edades
+df$edad[which(df$edad < 20)] = 0
+df$edad[which((df$edad >= 20) & (df$edad < 46))] = 1
+df$edad[which((df$edad >= 46) & (df$edad < 65))] = 2
+df$edad[which(df$edad >= 65)] = 3
+df$edad = factor(df$edad, labels=c("Joven", "Adulto joven", "Adulto", "Adulto mayor"))
 
 # unión de viaje con transporte en dataframe temporal
 df_temp = right_join(viaje[c("id_via", "id_soc")], transporte[c("id_via", "p5_3", "p5_14")], "id_via")
@@ -51,21 +60,29 @@ df_temp$transporte_priv = df_temp$p5_14 %in% c(1, 3, 4, 7, 9, 14, 16, 17, 18, 19
 df_temp$viaje_entre_sem = df_temp$p5_3 == 1
 df_temp$viaje_fin_de_sem = df_temp$p5_3 == 2
 
+# Tipo de transporte
 df$transporte_pub = right_join(df, aggregate(df_temp$transporte_pub, by = list(id_soc = df_temp$id_soc), FUN=sum), "id_soc")$x
-
+df$transporte_pub[which(df$transporte_pub > 0)] = 1
 df$transporte_priv = right_join(df, aggregate(df_temp$transporte_priv, by = list(id_soc = df_temp$id_soc), FUN=sum), "id_soc")$x
+df$transporte_priv[which(df$transporte_priv > 0)] = 2
+df$tipoTransporte = df$transporte_priv + df$transporte_pub
+df$tipoTransporte = factor(df$tipoTransporte, labels=c("Ninguno", "Publico", "Privado", "Publico y privado"))
 
-df$viaje_entre_sem = right_join(df, aggregate(df_temp$viaje_entre_sem, by = list(id_soc=df_temp$id_soc), FUN=sum), "id_soc")$x
-
-df$viaje_fin_de_sem = right_join(df, aggregate(df_temp$viaje_fin_de_sem, by = list(id_soc=df_temp$id_soc), FUN=sum), "id_soc")$x
-
-# Agregar columna de cantidad de carros y estrato
+# Cantidad de carros y estrato sociodemográfico
 hogar_sociodem <- right_join(hogar[c("id_hog", "p2_1_1", "estrato")], sociodem[c("id_soc", "id_hog")], "id_hog")
 df_temp <- right_join(hogar_sociodem[c("id_soc", "p2_1_1", "estrato")], viaje["id_soc"], "id_soc")
 df <- left_join(df, unique(df_temp[c("id_soc", "p2_1_1", "estrato")]), "id_soc")
+colnames(df)[which(names(df) == "p2_1_1")] <- "tieneCarro"
+df$tieneCarro[which(df$tieneCarro > 0)] = 1
+df$tieneCarro = factor(df$tieneCarro, labels=c("No", "Si"))
 
-colnames(df)[which(names(df) == "p2_1_1")] <- "cantidad_carros"
-colnames(df)[which(names(df) == "estrato")] <- "est_sociodem"
+# Renombrar estratos sociodemográficos a partir del catalogo
+estratos = read.csv("eod_2017_csv/thogar_eod2017/catalogos/estrato.csv")
+df$estrato = factor(df$estrato, labels=estratos$descrip)
 
-df = df[, !names(df) %in% "id_soc"]
+# Eliminar columnas innecesarias
+df = df[, !names(df) %in% c("id_soc", "transporte_pub", "transporte_priv")]
+
+# Guardar datos en csv
+write.csv(df, file="q12.csv", row.names=F)
 ```
