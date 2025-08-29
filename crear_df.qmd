@@ -59,5 +59,13 @@ df$viaje_entre_sem = right_join(df, aggregate(df_temp$viaje_entre_sem, by = list
 
 df$viaje_fin_de_sem = right_join(df, aggregate(df_temp$viaje_fin_de_sem, by = list(id_soc=df_temp$id_soc), FUN=sum), "id_soc")$x
 
-df = df[-c("id_soc")]
+# Agregar columna de cantidad de carros y estrato
+hogar_sociodem <- right_join(hogar[c("id_hog", "p2_1_1", "estrato")], sociodem[c("id_soc", "id_hog")], "id_hog")
+df_temp <- right_join(hogar_sociodem[c("id_soc", "p2_1_1", "estrato")], viaje["id_soc"], "id_soc")
+df <- left_join(df, unique(df_temp[c("id_soc", "p2_1_1", "estrato")]), "id_soc")
+
+colnames(df)[which(names(df) == "p2_1_1")] <- "cantidad_carros"
+colnames(df)[which(names(df) == "estrato")] <- "est_sociodem"
+
+df = df[, !names(df) %in% "id_soc"]
 ```
