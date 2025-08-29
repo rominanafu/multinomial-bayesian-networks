@@ -86,3 +86,31 @@ df = df[, !names(df) %in% c("id_soc", "transporte_pub", "transporte_priv")]
 # Guardar datos en csv
 write.csv(df, file="q12.csv", row.names=F)
 ```
+
+### Dataframe queries 3 y 4
+
+```{r}
+df = viaje[c("id_via", "p5_3", "p5_9_1", "p5_9_2", "p5_10_1", "p5_10_2", "estrato")]
+
+# Día en el que se realiza el viaje
+df$diaViaje = factor(df$p5_3, labels=c("Entre semana", "Sabado"))
+
+# Renombrar estratos sociodemográficos a partir del catalogo
+df$estrato = factor(df$estrato, labels=estratos$descrip)
+
+# Usar transporte público en cierto viaje
+df_temp = right_join(transporte[c("id_via", "p5_14")], viaje[c("id_via")], "id_via") # Medio de transportes por viaje
+df_temp$transporte_pub = df_temp$p5_14 %in% c(2, 5, 6, 8, 10, 11, 12, 13, 15)
+df$usaTransportePublico = right_join(df, aggregate(df_temp$transporte_pub, by=list(id_via=df_temp$id_via), FUN=sum), "id_via")$x
+df$usaTransportePublico[which(df$usaTransportePublico > 0)] = 1
+df$usaTransportePublico = factor(df$usaTransportePublico, labels=c("No", "Si"))
+
+# Determinar si el viaje se realizó durante hora pico o no
+df$horaPico = 
+  
+# Eliminar columnas innecesarias
+  
+# Guardar datos en csv
+  write.csv(df, file="q34.csv", row.names=F)
+```
+
