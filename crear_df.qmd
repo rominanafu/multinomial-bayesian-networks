@@ -72,9 +72,10 @@ df$tipoTransporte = factor(df$tipoTransporte, labels=c("Ninguno", "Publico", "Pr
 hogar_sociodem <- right_join(hogar[c("id_hog", "p2_1_1", "estrato")], sociodem[c("id_soc", "id_hog")], "id_hog")
 df_temp <- right_join(hogar_sociodem[c("id_soc", "p2_1_1", "estrato")], viaje["id_soc"], "id_soc")
 df <- left_join(df, unique(df_temp[c("id_soc", "p2_1_1", "estrato")]), "id_soc")
-colnames(df)[which(names(df) == "p2_1_1")] <- "tieneCarro"
-df$tieneCarro[which(df$tieneCarro > 0)] = 1
-df$tieneCarro = factor(df$tieneCarro, labels=c("No", "Si"))
+colnames(df)[which(names(df) == "p2_1_1")] <- "masDeUnCarro"
+df$masDeUnCarro[which(df$masDeUnCarro > 1)] = 2
+df$masDeUnCarro[which(df$masDeUnCarro == 1)] = 0
+df$masDeUnCarro = factor(df$masDeUnCarro, labels=c("No", "Si"))
 
 # Renombrar estratos sociodemográficos a partir del catalogo
 estratos = read.csv("eod_2017_csv/thogar_eod2017/catalogos/estrato.csv")
@@ -111,6 +112,6 @@ df$horaPico =
 # Eliminar columnas innecesarias
   
 # Guardar datos en csv
-  write.csv(df, file="q34.csv", row.names=F)
+write.csv(df, file="q34.csv", row.names=F)
 ```
 
