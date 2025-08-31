@@ -54,12 +54,10 @@ df$edad[which(df$edad >= 65)] = 3
 df$edad = factor(df$edad, labels=c("Joven", "Adulto joven", "Adulto", "Adulto mayor"))
 
 # unión de viaje con transporte en dataframe temporal
-df_temp = right_join(viaje[c("id_via", "id_soc")], transporte[c("id_via", "p5_3", "p5_14")], "id_via")
+df_temp = right_join(viaje[c("id_via", "id_soc")], transporte[c("id_via", "p5_14")], "id_via")
 df_temp = right_join(df, df_temp, "id_soc")
 df_temp$transporte_pub = df_temp$p5_14 %in% c(2, 5, 6, 8, 10, 11, 12, 13, 15)
 df_temp$transporte_priv = df_temp$p5_14 %in% c(1, 3, 4, 7, 9, 14, 16, 17, 18, 19)
-df_temp$viaje_entre_sem = df_temp$p5_3 == 1
-df_temp$viaje_fin_de_sem = df_temp$p5_3 == 2
 
 # Tipo de transporte
 df$transporte_pub = right_join(df, aggregate(df_temp$transporte_pub, by = list(id_soc = df_temp$id_soc), FUN=sum), "id_soc")$x
@@ -111,38 +109,29 @@ df$transporte_priv[which(df$transporte_priv > 0)] = 2
 df$tipoTransporte = df$transporte_priv + df$transporte_pub
 df$tipoTransporte = factor(df$tipoTransporte, labels=c("Ninguno", "Publico", "Privado", "Publico y privado"))
 
-# Determinar si el viaje se realizo durante hora pico o no
+# Determinar si el viaje se realizo en hora pico o no
 # Convertimos todo a minutos para hacer mas facil la chamba
-df$start <- df$p5_9_1*60 + df$p5_9_2 
-df$end   <- df$p5_10_1*60 + df$p5_10_2
+df$start <- df$p5_9_1*60 + df$p5_9_2
+df$end <- df$p5_10_1*60 + df$p5_10_2
 
 # Ajustamos viajes que cruzan medianoche
-df$duracion <- ifelse(df$end >= df$start,
-                      df$end - df$start,
-                      (24*60 - df$start) + df$end)
+df$end[df$start > df$end] <- df$end[df$start > df$end] + 24*60
 
-# Función para calcular translape de minutos con un intervalo
-overlap_minutes <- function(start, end, interval_start, interval_end) {
-  # Ajustamos para viajes que cruzan medianoche
-  if (end < start) end <- end + 24*60
-  start <- start %% (24*60)
-  end <- end %% (24*60)
-  
-  pmax(0, pmin(end, interval_end) - pmax(start, interval_start))
-}
+# Calculo de la duracion del viaje
+df$duracion <- df$end-df$start
 
-# Minutos en hora pico
-df$minutos_pico <- mapply(function(s, e) {
-  morning <- overlap_minutes(s, e, 7.5*60, 9.5*60)     
-  evening <- overlap_minutes(s, e, 17.5*60, 20*60)    
-  morning + evening
-}, df$start, df$end)
+# Calculo de minutos en hora pico
+# Primer intervalo de hora pico: 7:30-9:30 (en minutos [450, 570])
+# Segundo intervalo de hora pico: 17:30-20:00 (en minutos [1050, 1200])
+df$minutos_pico <- pmax(0, pmin(df$end, 570) - pmax(df$start, 450)) + # traslape primera hora pico
+                    pmax(0, pmin(df$end, 1050) - pmax(df$start, 1200)) # traslape segunda hora pico
+
 
 # Porcentaje de duración en hora pico
 df$porcentaje_pico <- df$minutos_pico / df$duracion
 
 # Hora pico sí/no
-df$horaPico <- factor(ifelse(df$porcentaje_pico > 0.5, "Pico", "No Pico"))
+df$horaPico <- factor(ifelse(df$porcentaje_pico > 0.5, "Si", "No"))
 
 # Seleccionar columnas con variables de interes
 df = df[, c("estrato", "diaViaje", "tipoTransporte", "horaPico")]
