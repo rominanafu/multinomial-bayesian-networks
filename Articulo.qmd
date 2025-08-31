@@ -87,6 +87,37 @@ Utilizando la columna de $p2\_1\_1$, la cantidad de autos o camionetas para tran
 
 Para la variable `estrato`, se renombraron las categorías de acuerdo con el catálogo *thogar_eod2017/catalogos/estrato.csv*.
 
+## Apéndice B
+
+El segundo set de datos se utilizará para responder las preguntas $3$ y $4$, las cuales tienen como variables de interés a `estrato`, `diaViaje`, `tipoTransporte` y `horaPico`. Para ello, de la información de viajes que se encuentra en *tviaje_eod2017/conjunto_de_datos/tviaje.csv*, se extrae el estrato sociodemográfico ($estrato$), la clasificación del día de viaje ($p5\_3$), y el horario en el que se realizó el viaje ($p5\_9\_1$ para la hora de inicio, $p5\_9\_2$ para el minuto de inicio, $p5\_10\_1$ para la hora de fin, $p5\_10\_2$ para el minuto de fin).
+
+#### Variable `diaViaje`
+
+La columna de la clasificación del día de viaje, $p5\_3$, presenta valores de $1$ y $2$, los cuales hacen referencia a que se viaje entre semana o a que se viaje en sábado respectivamente, de acuerdo con el catálogo que se encuentra en *tviaje_eod2017/catalogos/p5_3.csv*. Conociendo esto, se reemplazó el valor de $1$ a “Entre semana” y el de $2$ a “Sabado” para una mayor claridad en las categorías.
+
+#### Varibale `estrato`
+
+En la variable `estrato`, se renombraron las categorías de acuerdo con el catálogo *thogar_eod2017/catalogos/estrato.csv*.
+
+#### Variable `tipoTransporte`
+
+Utilizando el identificador del viaje ($id\_via$) en el conjunto de datos del transporte (el cual se encuentra en *ttransporte_eod2017/conjunto_de_datos/ttransporte.csv*), se contó en cuántas ocasiones se viajó en transporte público y en transporte privado en un solo viaje. Al igual que en el **Apéndice A**, se tomaron a los valores de $2, 5, 6, 8, 10, 11, 12, 13, 15$ en la variable $p5\_14$ como transportes públicos y a los valores $1, 3, 4, 7, 9, 14, 16, 17, 18, 19$ como transporte privado. A partir de este conteo, se le asignó la categoría de “Ninguno” a la variable `tipoTransporte` cuando no se viajó ni en transporte público ni privado, “Publico” cuando el viaje solamente se realizó en transporte público, “Privado” si el viaje solamente se realizó en transporte privado, y “Publico y privado” en caso de que el viaje se haya realizado tanto en transporte público como en transporte privado.
+
+#### Variable `horaPico`
+
+Para determinar si un viaje se llevó a cabo en hora pico o no, se asume que los horarios pico se encuentran entre las $7:30$ y $9:30$ horas, así como entre las $17:30$ y $20:00$ horas (poner referencia?). Con ello, se calculó cuántos minutos del viaje se dieron durante algún horario pico, y se dividió entre el total de minutos que duró el viaje para obtener una proporción del tiempo del viaje que se llevó a cabo en hora pico respecto a la duración total del viaje. En el caso en que el viaje se haya realizado en horario pico más de la mitad de su duración, este se considera que fue en hora pico. En caso contrario, se considera el viaje como no realizado en hora pico.
+
+Un caso a considerar a la hora de calcular las horas picos es que existen viajes que se terminaron en una hora previa a la hora de inicio, no en una hora posterior. Esto se asume que indica que el viaje se da en dos días, por lo que a la hora de obtener cuánto tiempo del viaje se llevó a cabo en horario pico, se considera primero el tiempo desde el momento del inicio del viaje hasta el fin del día, a lo cual se le agrega el tiempo entre el inicio del día y el momento del fin del viaje.
+
+La manera en la que se calculó la duración del viaje en horario pico es la siguiente:
+
+* Se tomó el valor máximo entre el inicio del viaje y el inicio del primer horario pico, al cual referiremos como $a$.
+* Se tomó el valor mínimo entre el fin del viaje y el fin del primer horario pico, al cual referiremos como $b$.
+* En caso de $a<b$, se considera que el tiempo $b-a$ se realizó en horario pico. Sino, no hubo traslape con dicho horario pico.
+* Se repiten los pasos anteriores para el segundo horario pico, y se suman estos tiempos.
+
+Para el caso particular en donde el viaje se realiza durante dos días, se secciona el horario, así que el traslape que se da en la hora de inicio hasta el final del día con los horarios pico, se le añade el traslape que se da entre el inicio del día hasta el final del viaje con los horarios pico.
+
 ## Referencias
 
 ::: bibliography
