@@ -118,7 +118,7 @@ df$end <- df$p5_10_1*60 + df$p5_10_2
 df$end[df$start > df$end] <- df$end[df$start > df$end] + 24*60
 
 # Calculo de la duracion del viaje
-df$duracion <- df$end-df$start
+df$duracion <- df$end-df$start+1
 
 # Calculo de minutos en hora pico
 # Primer intervalo de hora pico: 7:30-9:30 (en minutos [450, 570])
