@@ -113,55 +113,34 @@ df$usaTransportePublico = factor(df$usaTransportePublico, labels=c("No", "Si"))
 df$start <- df$p5_9_1*60 + df$p5_9_2 
 df$end   <- df$p5_10_1*60 + df$p5_10_2
 
-outliers <- df %>% filter(start > end)
+# Ajustamos viajes que cruzan medianoche
+df$duracion <- ifelse(df$end >= df$start,
+                      df$end - df$start,
+                      (24*60 - df$start) + df$end)
 
-if (nrow(outliers) > 0) {
-  
-  first_records <- outliers %>%
-    mutate(
-      p5_10_1 = 23,
-      p5_10_2 = 59,
-      end     = 23*60 + 59
-    )
-  
-  second_records <- outliers %>%
-    mutate(
-      p5_9_1 = 0,
-      p5_9_2 = 0,
-      start  = 0
-      # end se mantiene igual
-    )
-  
-  # Eliminar registros originales
-  df <- df %>% filter(start <= end)
-  
-  # Agregar los nuevos registros
-  df <- bind_rows(df, first_records, second_records)
-}
-
-
-# Translape de horas pico
+# Función para calcular translape de minutos con un intervalo
 overlap_minutes <- function(start, end, interval_start, interval_end) {
-  max(0, min(end, interval_end) - max(start, interval_start))
+  # Ajustamos para viajes que cruzan medianoche
+  if (end < start) end <- end + 24*60
+  start <- start %% (24*60)
+  end <- end %% (24*60)
+  
+  pmax(0, pmin(end, interval_end) - pmax(start, interval_start))
 }
 
+# Minutos en hora pico
 df$minutos_pico <- mapply(function(s, e) {
   morning <- overlap_minutes(s, e, 7.5*60, 9.5*60)     
   evening <- overlap_minutes(s, e, 17.5*60, 20*60)    
   morning + evening
 }, df$start, df$end)
 
-
-# Porcentaje en hora pico
-df$duracion <- df$end - df$start
+# Porcentaje de duración en hora pico
 df$porcentaje_pico <- df$minutos_pico / df$duracion
 
-# Hora pico si o no
-df$horaPico <- ifelse(df$porcentaje_pico > 0.5, "Pico", "No Pico")
-df$horaPico <- factor(df$horaPico)
+# Hora pico sí/no
+df$horaPico <- factor(ifelse(df$porcentaje_pico > 0.5, "Pico", "No Pico"))
 
-
-  
 # Eliminar columnas innecesarias
   
 # Guardar datos en csv
