@@ -91,6 +91,8 @@ write.csv(df, file="q12.csv", row.names=F)
 ### Dataframe queries 3 y 4
 
 ```{r}
+library(dplyr)
+
 df = viaje[c("id_via", "p5_3", "p5_9_1", "p5_9_2", "p5_10_1", "p5_10_2", "estrato")]
 
 # Día en el que se realiza el viaje
@@ -106,12 +108,62 @@ df$usaTransportePublico = right_join(df, aggregate(df_temp$transporte_pub, by=li
 df$usaTransportePublico[which(df$usaTransportePublico > 0)] = 1
 df$usaTransportePublico = factor(df$usaTransportePublico, labels=c("No", "Si"))
 
-# Determinar si el viaje se realizó durante hora pico o no
-df$horaPico = 
+# Determinar si el viaje se realizo durante hora pico o no
+# Convertimos todo a minutos para hacer mas facil la chamba
+df$start <- df$p5_9_1*60 + df$p5_9_2 
+df$end   <- df$p5_10_1*60 + df$p5_10_2
+
+outliers <- df %>% filter(start > end)
+
+if (nrow(outliers) > 0) {
+  
+  first_records <- outliers %>%
+    mutate(
+      p5_10_1 = 23,
+      p5_10_2 = 59,
+      end     = 23*60 + 59
+    )
+  
+  second_records <- outliers %>%
+    mutate(
+      p5_9_1 = 0,
+      p5_9_2 = 0,
+      start  = 0
+      # end se mantiene igual
+    )
+  
+  # Eliminar registros originales
+  df <- df %>% filter(start <= end)
+  
+  # Agregar los nuevos registros
+  df <- bind_rows(df, first_records, second_records)
+}
+
+
+# Translape de horas pico
+overlap_minutes <- function(start, end, interval_start, interval_end) {
+  max(0, min(end, interval_end) - max(start, interval_start))
+}
+
+df$minutos_pico <- mapply(function(s, e) {
+  morning <- overlap_minutes(s, e, 7.5*60, 9.5*60)     
+  evening <- overlap_minutes(s, e, 17.5*60, 20*60)    
+  morning + evening
+}, df$start, df$end)
+
+
+# Porcentaje en hora pico
+df$duracion <- df$end - df$start
+df$porcentaje_pico <- df$minutos_pico / df$duracion
+
+# Hora pico si o no
+df$horaPico <- ifelse(df$porcentaje_pico > 0.5, "Pico", "No Pico")
+df$horaPico <- factor(df$horaPico)
+
+
   
 # Eliminar columnas innecesarias
   
 # Guardar datos en csv
 write.csv(df, file="q34.csv", row.names=F)
 ```
-
