@@ -20,10 +20,42 @@ Presenta el contexto y la motivación del problema a estudiar. Debe incluir una 
 
 La movilidad urbana constituye un componente esencial en la calidad de vida de los habitantes de las grandes ciudades, al incidir directamente en el acceso a oportunidades educativas, laborales y recreativas. En particular, la Zona Metropolitana del Valle de México (ZMVM) enfrenta desde hace décadas retos asociados con la saturación vial, la desigualdad en el acceso a medios de transporte, y la alta dependencia del automóvil privado. [@alfonso2020]
 
-“En una región caracterizada por la desigualdad, las deficiencias de los sistemas de transporte público impactan de forma desproporcionada a los más vulnerables. Solamente el 43% de la población de América Latina y el Caribe tiene acceso conveniente al transporte público, y sus usuarios gastan 70% más tiempo en el desplazamiento al trabajo comparados a quienes utilizan vehículos privados”. (Plataforma Urbana y de Ciudades de América Latina y Caribe, 2023) \[2\]
+“En una región caracterizada por la desigualdad, las deficiencias de los sistemas de transporte público impactan de forma desproporcionada a los más vulnerables. Solamente el 43% de la población de América Latina y el Caribe tiene acceso conveniente al transporte público, y sus usuarios gastan 70% más tiempo en el desplazamiento al trabajo comparados a quienes utilizan vehículos privados”. (Plataforma Urbana y de Ciudades de América Latina y Caribe, 2023) [@plataforma2023]
 
 En 2017, el Instituto Nacional de Estadística y Geografía (INEGI), en colaboración con el Instituto de Ingeniería de la UNAM y la Secretaría de Movilidad de la Ciudad de México, llevó a cabo la “Encuesta Origen-Destino en Hogares de la ZMVM”. \[3\] Este levantamiento tuvo como propósito caracterizar los desplazamientos diarios de los habitantes de la metrópoli, registrando variables como motivo del viaje, duración, medio de transporte, horarios de salida y llegada, así como información sociodemográfica de los hogares y personas encuestadas.
 
+El presente artículo se centra en responder cuatro consultas específicas de esta base de datos generada por el INEGI:
+
+1.  ¿Cuál es la probabilidad de que una mujer utilice el transporte público en comparación con un hombre?
+
+2.  ¿Qué tan probable es que una persona tenga más de un automóvil o utilice transporte privado, dado que se trata de un hombre entre 20 y 45 años con estrato sociodemográfico bajo?
+
+3.  ¿Las personas con un estrato sociodemográfico bajo realizan más viajes en días hábiles que en días inhábiles?
+
+4.  ¿Cuál es la probabilidad de que una persona utilice transporte público durante las horas pico en comparación con las horas de menor tráfico?
+
+Este enfoque probabilístico contribuye a comprender mejor las dinámicas de transporte en la metrópoli y ofrece insumos valiosos para el diseño de políticas públicas orientadas a mejorar la equidad y eficiencia de los sistemas de movilidad.
+
+La idea central de este razonamiento probabilístico se basa en el teorema de Bayes y en las probabilidades condicionales para modelar las relaciones entre distintos eventos. En lugar de afirmar con certeza que “mañana lloverá”, este enfoque permite expresar escenarios más realistas, como decir que “existe un 70% de probabilidad de que mañana llueva”. [@bhattarai2025]
+
+El Teorema de Bayes, permite actualizar la probabilidad de una hipótesis H al observar nueva evidencia E:
+
+```{=tex}
+\begin{equation}
+P(H | E) = \frac{P(E | H)P(H)}{P(E)}
+\end{equation}
+```
+Donde $P(H)$ es la probabilidad previa de la hipótesis, $P(E|H)$ es la probabilidad de observar la evidencia dado que $H$ es cierta, y $P(H|E)$ es la probabilidad posterior, actualizada después de incorporar la evidencia.
+
+Una red bayesiana es un modelo gráfico probabilístico que utiliza un grafo acíclico dirigido (DAG, por sus siglas en inglés, Directed Acyclic Graph) para describir un conjunto de variables y sus relaciones condicionales . Las redes bayesianas funcionan para pronosticar un evento que ya ha ocurrido y predecir la probabilidad de que el factor contribuyente esté entre varias causas conocidas.
+
+Formalmente, una red bayesiana se define como el par $(G,P)$, donde $G=(V,E)$ es un DAG cuyos nodos $V=\{X_1,X_2,…,X_n\}$, corresponden a las variables de interés y los arcos $E$ representan dependencias directas, mientras que $P$ es el conjunto de distribuciones de probabilidad condicional asociadas a cada nodo. La probabilidad conjunta de todas las variables se factoriza como:
+
+```{=tex}
+\begin{equation}
+P(X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i | \text{Parents}(X_i))
+\end{equation}
+```
 ## Referencias
 
 ::: {.bibliography}
