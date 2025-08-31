@@ -92,6 +92,7 @@ write.csv(df, file="q12.csv", row.names=F)
 
 ```{r}
 library(dplyr)
+
 df = viaje[c("id_via", "p5_3", "p5_9_1", "p5_9_2", "p5_10_1", "p5_10_2", "estrato")]
 
 # Día en el que se realiza el viaje
@@ -164,6 +165,5 @@ df$horaPico <- factor(df$horaPico)
 # Eliminar columnas innecesarias
   
 # Guardar datos en csv
-
 write.csv(df, file="q34.csv", row.names=F)
 ```
