@@ -28,6 +28,7 @@ Los datos de las encuestas se encuentran en 5 archivos separados, que contienen 
 
 ```{r}
 library(tidyverse)
+library(dplyr)
 
 vivienda = read.csv("eod_2017_csv/tvivienda_eod2017/conjunto_de_datos/tvivienda.csv")
 viaje = read.csv("eod_2017_csv/tviaje_eod2017/conjunto_de_datos/tviaje.csv")
@@ -91,8 +92,6 @@ write.csv(df, file="q12.csv", row.names=F)
 ### Dataframe queries 3 y 4
 
 ```{r}
-library(dplyr)
-
 df = viaje[c("id_via", "p5_3", "p5_9_1", "p5_9_2", "p5_10_1", "p5_10_2", "estrato")]
 
 # Día en el que se realiza el viaje
@@ -104,9 +103,13 @@ df$estrato = factor(df$estrato, labels=estratos$descrip)
 # Usar transporte público en cierto viaje
 df_temp = right_join(transporte[c("id_via", "p5_14")], viaje[c("id_via")], "id_via") # Medio de transportes por viaje
 df_temp$transporte_pub = df_temp$p5_14 %in% c(2, 5, 6, 8, 10, 11, 12, 13, 15)
-df$usaTransportePublico = right_join(df, aggregate(df_temp$transporte_pub, by=list(id_via=df_temp$id_via), FUN=sum), "id_via")$x
-df$usaTransportePublico[which(df$usaTransportePublico > 0)] = 1
-df$usaTransportePublico = factor(df$usaTransportePublico, labels=c("No", "Si"))
+df_temp$transporte_priv = df_temp$p5_14 %in% c(1, 3, 4, 7, 9, 14, 16, 17, 18, 19)
+df$transporte_pub = right_join(df, aggregate(df_temp$transporte_pub, by=list(id_via=df_temp$id_via), FUN=sum), "id_via")$x
+df$transporte_pub[which(df$transporte_pub > 0)] = 1
+df$transporte_priv = right_join(df, aggregate(df_temp$transporte_priv, by=list(id_via=df_temp$id_via), FUN=sum), "id_via")$x
+df$transporte_priv[which(df$transporte_priv > 0)] = 2
+df$tipoTransporte = df$transporte_priv + df$transporte_pub
+df$tipoTransporte = factor(df$tipoTransporte, labels=c("Ninguno", "Publico", "Privado", "Publico y privado"))
 
 # Determinar si el viaje se realizo durante hora pico o no
 # Convertimos todo a minutos para hacer mas facil la chamba
@@ -141,7 +144,8 @@ df$porcentaje_pico <- df$minutos_pico / df$duracion
 # Hora pico sí/no
 df$horaPico <- factor(ifelse(df$porcentaje_pico > 0.5, "Pico", "No Pico"))
 
-# Eliminar columnas innecesarias
+# Seleccionar columnas con variables de interes
+df = df[, c("estrato", "diaViaje", "tipoTransporte", "horaPico")]
   
 # Guardar datos en csv
 write.csv(df, file="q34.csv", row.names=F)
