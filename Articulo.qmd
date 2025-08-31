@@ -1,0 +1,29 @@
+---
+title: "Artículo RBM"
+format:
+   html:
+     toc: true
+     html-math-method: katex
+     embed-resources: true
+     self-contained-math: true
+     df-print: kable
+bibliography: bibliografia.bib
+---
+
+## Abstract
+
+Síntesis breve y clara del contenido completo del artículo. Debe incluir el objetivo principal del estudio, la metodología empleada, los resultados más relevantes y las conclusiones principales.
+
+## Introducción
+
+Presenta el contexto y la motivación del problema a estudiar. Debe incluir una revisión breve del estado del arte o antecedentes relevantes, plantear claramente el problema o hipótesis que se aborda, y explicar la importancia del trabajo.
+
+La movilidad urbana constituye un componente esencial en la calidad de vida de los habitantes de las grandes ciudades, al incidir directamente en el acceso a oportunidades educativas, laborales y recreativas. En particular, la Zona Metropolitana del Valle de México (ZMVM) enfrenta desde hace décadas retos asociados con la saturación vial, la desigualdad en el acceso a medios de transporte, y la alta dependencia del automóvil privado. [@alfonso2020]
+
+“En una región caracterizada por la desigualdad, las deficiencias de los sistemas de transporte público impactan de forma desproporcionada a los más vulnerables. Solamente el 43% de la población de América Latina y el Caribe tiene acceso conveniente al transporte público, y sus usuarios gastan 70% más tiempo en el desplazamiento al trabajo comparados a quienes utilizan vehículos privados”. (Plataforma Urbana y de Ciudades de América Latina y Caribe, 2023) \[2\]
+
+En 2017, el Instituto Nacional de Estadística y Geografía (INEGI), en colaboración con el Instituto de Ingeniería de la UNAM y la Secretaría de Movilidad de la Ciudad de México, llevó a cabo la “Encuesta Origen-Destino en Hogares de la ZMVM”. \[3\] Este levantamiento tuvo como propósito caracterizar los desplazamientos diarios de los habitantes de la metrópoli, registrando variables como motivo del viaje, duración, medio de transporte, horarios de salida y llegada, así como información sociodemográfica de los hogares y personas encuestadas.
+
+## Referencias
+
+::: {.bibliography}
