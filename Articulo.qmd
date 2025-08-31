@@ -40,22 +40,54 @@ La idea central de este razonamiento probabilístico se basa en el teorema de Ba
 
 El Teorema de Bayes, permite actualizar la probabilidad de una hipótesis H al observar nueva evidencia E:
 
-```{=tex}
 \begin{equation}
 P(H | E) = \frac{P(E | H)P(H)}{P(E)}
 \end{equation}
-```
+
 Donde $P(H)$ es la probabilidad previa de la hipótesis, $P(E|H)$ es la probabilidad de observar la evidencia dado que $H$ es cierta, y $P(H|E)$ es la probabilidad posterior, actualizada después de incorporar la evidencia.
 
 Una red bayesiana es un modelo gráfico probabilístico que utiliza un grafo acíclico dirigido (DAG, por sus siglas en inglés, Directed Acyclic Graph) para describir un conjunto de variables y sus relaciones condicionales . Las redes bayesianas funcionan para pronosticar un evento que ya ha ocurrido y predecir la probabilidad de que el factor contribuyente esté entre varias causas conocidas.
 
 Formalmente, una red bayesiana se define como el par $(G,P)$, donde $G=(V,E)$ es un DAG cuyos nodos $V=\{X_1,X_2,…,X_n\}$, corresponden a las variables de interés y los arcos $E$ representan dependencias directas, mientras que $P$ es el conjunto de distribuciones de probabilidad condicional asociadas a cada nodo. La probabilidad conjunta de todas las variables se factoriza como:
 
-```{=tex}
 \begin{equation}
 P(X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i | \text{Parents}(X_i))
 \end{equation}
-```
+
+## Apéndice A
+
+El primer set de datos que se generó contiene las variables de interés relacionadas a las primeras dos preguntas, las cuales incluyen `sexo`, `tipoTransporte`, `masDeUnCarro`, `edad` y `estrato.` Para ello, se obtuvieron las columnas de $sexo$ y $edad$ desde el archivo *tviaje_eod2017/conjunto_de_datos/tviaje.csv*.
+
+#### Variable`sexo`
+
+La columna de $sexo$ en el archivo de viajes contiene valores de $1$ y $2$, cuyos significados se encuentran en el catálogo vinculado a este archivo, por lo que se reemplazaron los valores de acuerdo con el catálogo en *tviaje_eod2017/catalogos/sexo.csv*.
+
+#### Variable `edad`
+
+La variable `edad` fue clasificada en 4 categorías:
+
+* *Joven:* Persona menor a $20$ años.
+* *Adulto joven:* Persona entre $20$ y $45$ años.
+* *Adulto:* Persona entre $46$ y $64$ años.
+* *Adulto mayor:* Persona mayor a los $64$ años.
+
+#### Variable `tipoTransporte`
+
+Utilizando el identificador del viaje ($id\_via$) dentro de este mismo conjunto de datos, se realizó una unión con los datos de transporte (archivo con la ruta *ttransporte_eod2017/conjunto_de_datos/ttransporte.csv*), para obtener las variables $p5\_3$ y $p5\_14$, que representan el día de viaje y el medio de transporte respectivamente. Con ello, se contó la cantidad de veces en las que se viajó en transporte público (transportes correspondientes a los números $2, 5, 6, 8, 10, 11, 12, 13, 15$ en la variable $p5\_14$) y la cantidad de veces en las que se viajó en transporte privado (transportes correspondientes a los números $1, 3, 4, 7, 9, 14, 16, 17, 18, 19$ en la variable $p5\_14$) por persona.
+
+A la variable `tipoTransporte` se le asignó el valor “Ninguno” cuando se viajó $0$ veces en transporte público y $0$ veces en transporte privado, “Publico” cuando se viajó solamente en transporte público, “Privado” cuando se viajó solamente en transporte privado, y “Publico y privado” cuando se viajó por lo menos una vez en ambos tipos de transporte.
+
+Posteriormente, se realizó una unión entre la tabla con la información de los hogares (*thogar_eod2017/conjunto_de_datos/thogar.csv*) y la de información sociodemográfica (*tsdem_eod2017/conjunto_de_datos/tsdem.csv*), para vincular a través del identificador del hogar ($id\_hog$) la información del identificador de la persona ($id\_soc$) junto con la cantidad de autos o camionetas que se tienen para transportarse diariamente ($p2\_1\_1$) y el estrato sociodemográfico ($estrato$).
+
+#### Variable `masDeUnCarro`
+
+Utilizando la columna de $p2\_1\_1$, la cantidad de autos o camionetas para transporte, se asignó el valor de “No” si se tenían $0$ o $1$ autos, y se asignó “Si” cuando se tenían dos o más autos.
+
+#### Variable `estrato`
+
+Para la variable `estrato`, se renombraron las categorías de acuerdo con el catálogo *thogar_eod2017/catalogos/estrato.csv*.
+
 ## Referencias
 
-::: {.bibliography}
+::: bibliography
+:::
