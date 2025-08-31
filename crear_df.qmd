@@ -124,7 +124,9 @@ df$duracion <- df$end-df$start
 # Primer intervalo de hora pico: 7:30-9:30 (en minutos [450, 570])
 # Segundo intervalo de hora pico: 17:30-20:00 (en minutos [1050, 1200])
 df$minutos_pico <- pmax(0, pmin(df$end, 570) - pmax(df$start, 450)) + # traslape primera hora pico
-                    pmax(0, pmin(df$end, 1050) - pmax(df$start, 1200)) # traslape segunda hora pico
+                    pmax(0, pmin(df$end, 1050) - pmax(df$start, 1200)) + # traslape segunda hora pico
+                    pmax(0, pmin(df$end, 24*60+1050) - pmax(df$start, 24*60+1200)) + # traslape primera hora pico dia siguiente
+                    pmax(0, pmin(df$end, 24*60+1050) - pmax(df$start, 24*60+1200)) # traslape segunda hora pico dia siguiente
 
 
 # Porcentaje de duración en hora pico
