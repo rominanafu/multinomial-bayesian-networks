@@ -112,6 +112,7 @@ score(dag4, data = data34, type = "bic")
 
 ```{r}
 best_dag_q12 = hc(data12)
+fitted_q12 <- bn.fit(best_dag_q12, data = data12)
 modelstring(best_dag_q12)
 ```
 
@@ -121,6 +122,7 @@ score(best_dag_q12, data = data12, type = "bic")
 
 ```{r}
 best_dag_q34 = hc(data34)
+fitted_q34 <- bn.fit(best_dag_q34, data = data34)
 modelstring(best_dag_q34)
 ```
 
@@ -148,4 +150,61 @@ flowchart TD
     e --> h(horaPico)
     d --> h
     tt --> h
+```
+**Query 1**
+```{r}
+prob_mujer <- cpquery(fitted_q12,
+                      event = (tipoTransporte == "Publico"),
+                      evidence = (sexo == "Mujer"))
+
+prob_hombre <- cpquery(fitted_q12,
+                       event = (tipoTransporte == "Publico"),
+                       evidence = (sexo == "Hombre"))
+
+prob_mujer
+prob_hombre
+
+```
+
+
+**Query 2**
+```{r}
+prob_adulto_bajo <- cpquery(fitted_q12,
+                      event = ( masDeUnCarro == "Si"),
+                      evidence = (edad == "Adulto joven") & (estrato == "Bajo"))
+
+
+prob_adulto_bajo
+```
+
+**Query 3**
+```{r}
+prob_viaje_habil <- cpquery(fitted_q34,
+        event = (diaViaje == "Entre semana"),
+        evidence = (estrato == "Bajo"))
+
+prob_viaje_no_habil <- cpquery(fitted_q34,
+        event = (diaViaje == "Sabado"),
+        evidence = (estrato == "Bajo"))
+
+prob_viaje_habil
+prob_viaje_no_habil
+```
+viajan mas en dias habiles
+
+**Query 4**
+```{r}
+
+p_pico <- cpquery(fitted_q34, 
+                  event = (tipoTransporte == "Publico"), 
+                  evidence = (horaPico == "Si"))
+
+
+p_no_pico <- cpquery(fitted_q34, 
+                     event = (tipoTransporte == "Publico"), 
+                     evidence = (horaPico == "No"))
+
+p_pico
+p_no_pico
+
 ```
