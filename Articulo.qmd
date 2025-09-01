@@ -18,7 +18,7 @@ Síntesis breve y clara del contenido completo del artículo. Debe incluir el ob
 
 La movilidad urbana constituye un componente esencial en la calidad de vida de los habitantes de las grandes ciudades, al incidir directamente en el acceso a oportunidades educativas, laborales y recreativas. En particular, la Zona Metropolitana del Valle de México (ZMVM) enfrenta desde hace décadas retos asociados con la saturación vial, la desigualdad en el acceso a medios de transporte, y la alta dependencia del automóvil privado. [@alfonso2020]
 
-“En una región caracterizada por la desigualdad, las deficiencias de los sistemas de transporte público impactan de forma desproporcionada a los más vulnerables. Solamente el 43% de la población de América Latina y el Caribe tiene acceso conveniente al transporte público, y sus usuarios gastan 70% más tiempo en el desplazamiento al trabajo comparados a quienes utilizan vehículos privados”. (Plataforma Urbana y de Ciudades de América Latina y Caribe, 2023) [@plataforma2023]
+> “En una región caracterizada por la desigualdad, las deficiencias de los sistemas de transporte público impactan de forma desproporcionada a los más vulnerables. Solamente el 43% de la población de América Latina y el Caribe tiene acceso conveniente al transporte público, y sus usuarios gastan 70% más tiempo en el desplazamiento al trabajo comparados a quienes utilizan vehículos privados”. [@plataforma2023]
 
 En 2017, el Instituto Nacional de Estadística y Geografía (INEGI), en colaboración con el Instituto de Ingeniería de la UNAM y la Secretaría de Movilidad de la Ciudad de México, llevó a cabo la “Encuesta Origen-Destino en Hogares de la ZMVM”. [@inegi_eod2017] Este levantamiento tuvo como propósito caracterizar los desplazamientos diarios de los habitantes de la metrópoli, registrando variables como motivo del viaje, duración, medio de transporte, horarios de salida y llegada, así como información sociodemográfica de los hogares y personas encuestadas.
 
@@ -38,22 +38,24 @@ La idea central de este razonamiento probabilístico se basa en el teorema de Ba
 
 El Teorema de Bayes, permite actualizar la probabilidad de una hipótesis H al observar nueva evidencia E:
 
+```{=tex}
 \begin{equation}
 P(H | E) = \frac{P(E | H)P(H)}{P(E)}
 \end{equation}
-
+```
 Donde $P(H)$ es la probabilidad previa de la hipótesis, $P(E|H)$ es la probabilidad de observar la evidencia dado que $H$ es cierta, y $P(H|E)$ es la probabilidad posterior, actualizada después de incorporar la evidencia.
 
 Una red bayesiana es un modelo gráfico probabilístico que utiliza un grafo acíclico dirigido (DAG, por sus siglas en inglés, Directed Acyclic Graph) para describir un conjunto de variables y sus relaciones condicionales . Las redes bayesianas funcionan para pronosticar un evento que ya ha ocurrido y predecir la probabilidad de que el factor contribuyente esté entre varias causas conocidas.
 
-## Metodología    
+## Metodología
 
 Formalmente, una red bayesiana se define como el par $(G,P)$, donde $G=(V,E)$ es un DAG cuyos nodos $V=\{X_1,X_2,…,X_n\}$, corresponden a las variables de interés y los arcos $E$ representan dependencias directas, mientras que $P$ es el conjunto de distribuciones de probabilidad condicional asociadas a cada nodo. La probabilidad conjunta de todas las variables se factoriza como:
 
+```{=tex}
 \begin{equation}
 P(X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i | \text{Parents}(X_i))
 \end{equation}
-
+```
 Esta estructura permite analizar relaciones de dependencia complejas, realizar inferencias sobre escenarios hipotéticos y evaluar cómo distintos factores individuales y contextuales influyen en los patrones de transporte en la ZMVM.
 
 Las redes bayesianas multinomiales ofrecen una herramienta poderosa para modelar interacciones probabilísticas entre variables, permitiendo no sólo estimar la probabilidad de determinados comportamientos de viaje, sino también evaluar cómo cambian dichas probabilidades bajo distintos escenarios.
@@ -62,13 +64,13 @@ Para dar respuesta a las preguntas, se trabajará con información proveniente d
 
 Para crear los modelos que se presentarán posteriormente, se identificaron las siguientes variables de interés a partir de las preguntas dadas.
 
-* `sexo`: Mujer, Hombre
-* `tipoTransporte`: Ninguno, Publico, Privado, Publico y privado
-* `masDeUnCarro`: No, Si
-* `edad`: Joven, Adulto joven, Adulto, Adulto mayor
-* `estrato`: Bajo, Medio bajo, Medio alto, Alto
-* `diaViaje`: Entre semana, Sabado
-* `horaPico`: No, Si
+-   `sexo`: Mujer, Hombre
+-   `tipoTransporte`: Ninguno, Publico, Privado, Publico y privado
+-   `masDeUnCarro`: No, Si
+-   `edad`: Joven, Adulto joven, Adulto, Adulto mayor
+-   `estrato`: Bajo, Medio bajo, Medio alto, Alto
+-   `diaViaje`: Entre semana, Sabado
+-   `horaPico`: No, Si
 
 Es de notar, que las primeras dos preguntas tratan sobre las personas que realizaron los viajes, mientras que las últimas dos hablan sobre los viajes como tal, y dado que una persona puede tener varios viajes registrados, se crearán dos bases de datos desde la base original. En la primera, cada registro corresponde a una persona, mientras que en la segunda, cada registro corresponde a un viaje.
 
@@ -92,15 +94,16 @@ Una vez habiendo seleccionado los DAGs óptimos para cada conjunto de datos, se 
 
 Previo a implementar las propuestas de los DAGs y determinar el mejor modelo para responder a las preguntas, se realizó primeramente la limpieza de los datos de la encuesta del INEGI. Para ello, se generó primero un archivo en donde se encuentran las variables de interés de las primeras dos preguntas, las cuales son:
 
-  * `sexo`: El sexo de la persona encuestada.
-  * `edad`: El rango de edad de la persona encuestada.
-  * `tipoTransporte`: Indica si la persona utilizó transporte público, privado, ambos o ninguno para viajar.
-  * `masDeUnCarro`: Indica si la persona cuenta con más de un carro o no.
-  * `estrato`: Indica el estrato sociodemográfico de la persona encuestada.
-  
-El desarrollo de este conjunto de datos es descrito en el Apéndice A. El código para dicho procedimiento es el siguiente:
+-   `sexo`: El sexo de la persona encuestada.
+-   `edad`: El rango de edad de la persona encuestada.
+-   `tipoTransporte`: Indica si la persona utilizó transporte público, privado, ambos o ninguno para viajar.
+-   `masDeUnCarro`: Indica si la persona cuenta con más de un carro o no.
+-   `estrato`: Indica el estrato sociodemográfico de la persona encuestada.
 
-```{r}
+El desarrollo de este conjunto de datos es descrito en el [Apéndice A](@apéndice-a). El código para dicho procedimiento es el siguiente:
+
+```{r, eval=FALSE}
+
 ## Importar librerias y leer datos
 library(tidyverse)
 library(dplyr)
@@ -161,14 +164,14 @@ write.csv(df, file="q12.csv", row.names=F)
 
 Análogamente, se creó el conjunto de datos para las preguntas 3 y 4, cuyas variables de interés son:
 
-  * `diaViaje`: Indica si el viaje se llevó a cabo entre semana o en sábado.
-  * `estrato`: Indica el estrato sociodemográfico de la persona que realiza el viaje.
-  * `tipoTransporte`: Indica si durante el viaje se utilizó transporte público, privado, ambos o ninguno.
-  * `horaPico`: Indica si más de la mitad del viaje se realizó en hora pico.
+-   `diaViaje`: Indica si el viaje se llevó a cabo entre semana o en sábado.
+-   `estrato`: Indica el estrato sociodemográfico de la persona que realiza el viaje.
+-   `tipoTransporte`: Indica si durante el viaje se utilizó transporte público, privado, ambos o ninguno.
+-   `horaPico`: Indica si más de la mitad del viaje se realizó en hora pico.
 
-El desarrollo de este conjunto de datos es descrito en el Apéndice B. El código para dicho procedimiento es el siguiente:
+El desarrollo de este conjunto de datos es descrito en el [Apéndice B](@apéndice-b). El código para dicho procedimiento es el siguiente:
 
-```{r}
+```{r, eval=FALSE}
 ## Data frame queries 3 y 4
 df = viaje[c("id_via", "p5_3", "p5_9_1", "p5_9_2", "p5_10_1", "p5_10_2", "estrato")]
 
@@ -230,10 +233,16 @@ En esta primera red, se establecen sexo y edad como variables independientes, pu
 
 Las relaciones anteriores llevan al siguiente grafo dirigido que será utilizado para la primera red bayesiana:
 
-######################## Insertar codigo para DAG 1
+```{mermaid}
+flowchart TD
+    s(sexo) --> e(estrato)
+    ed(edad) --> e
+    e --> mc(masDeUnCarro)
+    e --> tt(tipoTransporte)
+    mc --> tt
+```
 
-Utilizando esta DAG, podemos factorizar la distribución de probabilidad global de este conjunto de variables de la siguiente manera:
-$$
+Utilizando esta DAG, podemos factorizar la distribución de probabilidad global de este conjunto de variables de la siguiente manera: $$
 \mathbb{P}(sexo,edad,estrato,masDeunCarro,tipoTransporte)=\mathbb{P}(sexo) \,\mathbb{P}(edad)\, \mathbb{P}(estrato|edad,sexo) \\
 \mathbb{P}(masDeUnCarro|estrato) \,\mathbb{P}(tipoTransporte|masDeUnCarro,estrato)
 $$
@@ -242,10 +251,15 @@ La segunda propuesta sigue un formato similar pero con relaciones distintas a lo
 
 Las relaciones anteriores pueden ser representadas con la siguiente DAG:
 
-######################## Insertar codigo para DAG 2
+```{mermaid}
+flowchart TD
+    s(sexo) --> e(estrato)
+    e --> mc(masDeUnCarro)
+    ed(edad) --> mc
+    mc --> tt(tipoTransporte)
+```
 
-Con las relaciones propuestas anteriormente la factorización de la distribución global queda de la siguiente manera:
-$$
+Con las relaciones propuestas anteriormente la factorización de la distribución global queda de la siguiente manera: $$
 \,\mathbb{P}(sexo,edad,estrato,masDeunCarro,tipoTransporte)=\mathbb{P}(sexo) \,\mathbb{P}(edad) \,\mathbb{P}(estrato|sexo) \\
 \,\mathbb{P}(masDeUnCarro|estrato,edad) \,\mathbb{P}(tipoTransporte|masDeUnCarro)
 $$
@@ -297,7 +311,6 @@ arcs(dag2) = arc_set2
 arc.strength(dag2, data = data12, criterion = "mi")
 ```
 
-
 Nuevamente, todas las relaciones entre variables que propusimos en un inicio tienen un p-value menor a 0.05, por lo que también podemos afimar que fueron buenas propuestas. Es por esto, que también es necesario llevar a cabo otro tipo de pruebas, como el criterio de información bayesiano (BIC) mencionado con anterioridad. Esta prueba se lleva a cabo de la siguiente manera:
 
 ```{r}
@@ -308,10 +321,7 @@ score(dag1, data = data12, type = "bic")
 score(dag2, data = data12, type = "bic")
 ```
 
-
-Ya que el objetivo del BIC es su maximización, podemos darnos cuenta que el primer modelo propuesto presenta mejor adaptación a los datos presentados al tener un score más alto, por lo que puede ser mejor para su utilización en un cálculo de probabilidades. Sin embargo, estos pueden no ser los mejores, es por esto que de igual manera se hizo uso del algoritmo de hill climbing para generar una nueva DAG. Que busca tener un mejor score en la prueba BIC:
-
-######################## Insertar analisis de DAG hill climbing y respuesta a queries
+Ya que el objetivo del BIC es su maximización, podemos darnos cuenta que el primer modelo propuesto presenta mejor adaptación a los datos presentados al tener un score más alto, por lo que puede ser mejor para su utilización en un cálculo de probabilidades.
 
 Por otro lado, a continuación se presentan las dos propuestas de relaciones entre variables para las últimas dos preguntas, que nos permitirán hacer otros dos grafos dirigidos:
 
@@ -319,10 +329,14 @@ Para la primera propuesta, se considera el estrato como una variable independien
 
 Las anteriores relaciones de variables llevan al siguiente diagrama de grafo dirigido:
 
-######################## Insertar codigo para DAG 3
+```{mermaid}
+flowchart TD
+    e(estrato) --> d(diaViaje)
+    d --> h(horaPico)
+    e --> t(tipoTransporte)
+```
 
-Con lo anterior previamente definido la factorización de la distribución global queda de la siguiente manera:
-$$
+Con lo anterior previamente definido la factorización de la distribución global queda de la siguiente manera: $$
 \mathbb{P}(estrato,diaViaje,tipoTransporte,horaPico)=\mathbb{P}(estrato) \,\mathbb{P}(tipoTransporte|estrato) \\
 \,\mathbb{P}(diaViaje|estrato) \,\mathbb{P}(horaPico|diaViaje)
 $$
@@ -333,15 +347,108 @@ Nuevamente, se consideró al estrato como una variable independiente, así como 
 
 Con todas estas relaciones entre variables establecidas llegamos al siguiente grafo dirigido:
 
-######################## Insertar codigo para DAG 4
+```{mermaid}
+flowchart TD
+    a(estrato) --> b(tipoTransporte)
+    c(diaViaje) --> d(horaPico)
+    c --> b
+    d --> b
+```
 
-El grafo anterior nos permite factorizar la distribución global como:
-$$
+El grafo anterior nos permite factorizar la distribución global como: $$
 \mathbb{P}(estrato,diaViaje,tipoTransporte,horaPico)=\mathbb{P}(estrato) \,\mathbb{P}(diaViaje) \,\mathbb{P}(horaPico|diaViaje) \\
 \,\mathbb{P}(tipoTransporte|estrato,diaViaje,horaPico)
-$$
+$$ Para la DAG #3
 
-## Apéndice A
+```{r}
+dag3 = empty.graph(nodes = c("estrato", "diaViaje", "tipoTransporte", "horaPico"))
+
+arc_set3 = matrix(c("estrato", "diaViaje",
+                      "diaViaje", "horaPico",
+                      "estrato", "tipoTransporte"),
+                    byrow = TRUE, ncol = 2,
+                    dimnames = list(NULL, c("from", "to")))
+arcs(dag3) = arc_set3
+```
+
+DAG #4
+
+```{r}
+dag4 = empty.graph(nodes = c("estrato", "tipoTransporte", "diaViaje", "horaPico"))
+
+arc_set4 = matrix(c("estrato", "tipoTransporte",
+                    "diaViaje", "horaPico",
+                    "diaViaje", "tipoTransporte",
+                    "horaPico", "tipoTransporte"),
+                  byrow = TRUE, ncol = 2,
+                  dimnames = list(NULL, c("from", "to")))
+arcs(dag4) = arc_set4
+```
+
+Volvemos a verificar la validez de las relaciones planteadas entre variables. Para ello se aplican nuevamente las pruebas basadas en información mutua, lo que permite determinar si los arcos definidos en la DAG están presentes en los datos.
+
+```{r}
+arc.strength(dag3, data = data34, criterion = "mi")
+arc.strength(dag4, data = data34, criterion = "mi")
+```
+
+Podemos observar que para ambas DAG, el p_value es menor al nivel de significancia de 0.05, por lo que podemos afirmar que las relaciones propuestas son relevantes.
+
+De igual manera se calcula el puntaje BIC correspondiente a cada modelo, con el fin de comparar su ajuste.
+
+```{r}
+score(dag3, data = data34, type = "bic")
+score(dag4, data = data34, type = "bic")
+```
+
+Recordemos que una DAG con scores más altos ajusta mejor a los datos, por lo que concluimos que la mejor DAG para las queries 3 y 4 es la DAG #4
+
+Finalmente empleamos el algoritmo de Hill Climbing para obtener el DAG con el puntaje óptimo en cada caso, y contrastarlo con las propuestas iniciales calculando también el puntaje BIC.
+
+```{r}
+best_dag_q12 = hc(data12)
+modelstring(best_dag_q12)
+```
+
+```{mermaid}
+flowchart TD
+    s(sexo) --> ed(edad)
+    s --> tt(tipoTransporte)
+    ed --> tt
+    ed --> mc(masDeUnCarro)
+    tt --> mc
+    ed --> e(estrato)
+    tt --> e
+    mc --> e
+```
+
+```{r}
+best_dag_q34 = hc(data34)
+modelstring(best_dag_q34)
+```
+
+```{mermaid}
+flowchart TD
+    e(estrato) --> d(diaViaje)
+    e --> tt(tipoTransporte)
+    d --> tt
+    e --> h(horaPico)
+    d --> h
+    tt --> h
+```
+
+```{r}
+score(best_dag_q12, data = data12, type = "bic")
+score(best_dag_q34, data = data34, type = "bic")
+```
+
+Observamos que las estructuras del algoritmo presentan un mejor puntaje BIC, indicando un ajuste superior a los datos. Por lo tanto, los modelos obtenidos con Hill-Climbing constituyen la mejor opción para el análisis probabilístico en estas consultas.
+
+Pese a que el algoritmo generó el DAG que mejor se ajusta a los datos, es importante revisar la coherencia de las relaciones planteadas. En este caso, aparece una conexión entre sexo y edad, la cual no necesariamente tiene sentido.Por otro lado, podemos encontrar la relación de edad y más de un carro que incluimos en una de nuestras propuestas, reafirmando la decisión.
+
+En este caso, el algoritmo generó un DAG en el que estrato influye en día de viaje y hora pico, y estas a su vez se relacionan con el tipo de transporte. A diferencia del ejemplo anterior, no encontramos inconsistencias lógicas en las conexiones, ya que las relaciones pueden explicarse desde el contexto de la movilidad. Podemos observar que esta DAG es muy parecida a la propuesta, tenemos las mismas relaciones pero el algoritmo encontró una más entre el estrato y la variable de horaPico
+
+## Apéndice A {#apéndice-a}
 
 El primer set de datos que se generó contiene las variables de interés relacionadas a las primeras dos preguntas, las cuales incluyen `sexo`, `tipoTransporte`, `masDeUnCarro`, `edad` y `estrato.` Para ello, se obtuvieron las columnas de $sexo$ y $edad$ desde el archivo *tviaje_eod2017/conjunto_de_datos/tviaje.csv*.
 
@@ -353,10 +460,10 @@ La columna de $sexo$ en el archivo de viajes contiene valores de $1$ y $2$, cuyo
 
 La variable `edad` fue clasificada en 4 categorías:
 
-* *Joven:* Persona menor a $20$ años.
-* *Adulto joven:* Persona entre $20$ y $45$ años.
-* *Adulto:* Persona entre $46$ y $64$ años.
-* *Adulto mayor:* Persona mayor a los $64$ años.
+-   *Joven:* Persona menor a $20$ años.
+-   *Adulto joven:* Persona entre $20$ y $45$ años.
+-   *Adulto:* Persona entre $46$ y $64$ años.
+-   *Adulto mayor:* Persona mayor a los $64$ años.
 
 #### Variable `tipoTransporte`
 
@@ -374,7 +481,7 @@ Utilizando la columna de $p2\_1\_1$, la cantidad de autos o camionetas para tran
 
 Para la variable `estrato`, se renombraron las categorías de acuerdo con el catálogo *thogar_eod2017/catalogos/estrato.csv*.
 
-## Apéndice B
+## Apéndice B {#apéndice-b}
 
 El segundo set de datos se utilizará para responder las preguntas $3$ y $4$, las cuales tienen como variables de interés a `estrato`, `diaViaje`, `tipoTransporte` y `horaPico`. Para ello, de la información de viajes que se encuentra en *tviaje_eod2017/conjunto_de_datos/tviaje.csv*, se extrae el estrato sociodemográfico ($estrato$), la clasificación del día de viaje ($p5\_3$), y el horario en el que se realizó el viaje ($p5\_9\_1$ para la hora de inicio, $p5\_9\_2$ para el minuto de inicio, $p5\_10\_1$ para la hora de fin, $p5\_10\_2$ para el minuto de fin).
 
@@ -398,10 +505,10 @@ Un caso a considerar a la hora de calcular las horas picos es que existen viajes
 
 La manera en la que se calculó la duración del viaje en horario pico es la siguiente:
 
-* Se tomó el valor máximo entre el inicio del viaje y el inicio del primer horario pico, al cual referiremos como $a$.
-* Se tomó el valor mínimo entre el fin del viaje y el fin del primer horario pico, al cual referiremos como $b$.
-* En caso de $a<b$, se considera que el tiempo $b-a$ se realizó en horario pico. Sino, no hubo traslape con dicho horario pico.
-* Se repiten los pasos anteriores para el segundo horario pico, y se suman estos tiempos.
+-   Se tomó el valor máximo entre el inicio del viaje y el inicio del primer horario pico, al cual referiremos como $a$.
+-   Se tomó el valor mínimo entre el fin del viaje y el fin del primer horario pico, al cual referiremos como $b$.
+-   En caso de $a<b$, se considera que el tiempo $b-a$ se realizó en horario pico. Sino, no hubo traslape con dicho horario pico.
+-   Se repiten los pasos anteriores para el segundo horario pico, y se suman estos tiempos.
 
 Para el caso particular en donde el viaje se realiza durante dos días, se secciona el horario, así que el traslape que se da en la hora de inicio hasta el final del día con los horarios pico, se le añade el traslape que se da entre el inicio del día hasta el final del viaje con los horarios pico.
 
