@@ -16,13 +16,11 @@ Síntesis breve y clara del contenido completo del artículo. Debe incluir el ob
 
 ## Introducción
 
-Presenta el contexto y la motivación del problema a estudiar. Debe incluir una revisión breve del estado del arte o antecedentes relevantes, plantear claramente el problema o hipótesis que se aborda, y explicar la importancia del trabajo.
-
 La movilidad urbana constituye un componente esencial en la calidad de vida de los habitantes de las grandes ciudades, al incidir directamente en el acceso a oportunidades educativas, laborales y recreativas. En particular, la Zona Metropolitana del Valle de México (ZMVM) enfrenta desde hace décadas retos asociados con la saturación vial, la desigualdad en el acceso a medios de transporte, y la alta dependencia del automóvil privado. [@alfonso2020]
 
 “En una región caracterizada por la desigualdad, las deficiencias de los sistemas de transporte público impactan de forma desproporcionada a los más vulnerables. Solamente el 43% de la población de América Latina y el Caribe tiene acceso conveniente al transporte público, y sus usuarios gastan 70% más tiempo en el desplazamiento al trabajo comparados a quienes utilizan vehículos privados”. (Plataforma Urbana y de Ciudades de América Latina y Caribe, 2023) [@plataforma2023]
 
-En 2017, el Instituto Nacional de Estadística y Geografía (INEGI), en colaboración con el Instituto de Ingeniería de la UNAM y la Secretaría de Movilidad de la Ciudad de México, llevó a cabo la “Encuesta Origen-Destino en Hogares de la ZMVM”. \[3\] Este levantamiento tuvo como propósito caracterizar los desplazamientos diarios de los habitantes de la metrópoli, registrando variables como motivo del viaje, duración, medio de transporte, horarios de salida y llegada, así como información sociodemográfica de los hogares y personas encuestadas.
+En 2017, el Instituto Nacional de Estadística y Geografía (INEGI), en colaboración con el Instituto de Ingeniería de la UNAM y la Secretaría de Movilidad de la Ciudad de México, llevó a cabo la “Encuesta Origen-Destino en Hogares de la ZMVM”. [@inegi_eod2017] Este levantamiento tuvo como propósito caracterizar los desplazamientos diarios de los habitantes de la metrópoli, registrando variables como motivo del viaje, duración, medio de transporte, horarios de salida y llegada, así como información sociodemográfica de los hogares y personas encuestadas.
 
 El presente artículo se centra en responder cuatro consultas específicas de esta base de datos generada por el INEGI:
 
@@ -34,7 +32,7 @@ El presente artículo se centra en responder cuatro consultas específicas de es
 
 4.  ¿Cuál es la probabilidad de que una persona utilice transporte público durante las horas pico en comparación con las horas de menor tráfico?
 
-Este enfoque probabilístico contribuye a comprender mejor las dinámicas de transporte en la metrópoli y ofrece insumos valiosos para el diseño de políticas públicas orientadas a mejorar la equidad y eficiencia de los sistemas de movilidad.
+Dado que la movilidad está influenciada por diversos factores interrelacionados resulta difícil explicar estas relaciones con un enfoque únicamente determinista. El uso de modelos probabilísticos ofrece una manera más robusta de capturar estas interacciones y de responder a las preguntas planteadas.
 
 La idea central de este razonamiento probabilístico se basa en el teorema de Bayes y en las probabilidades condicionales para modelar las relaciones entre distintos eventos. En lugar de afirmar con certeza que “mañana lloverá”, este enfoque permite expresar escenarios más realistas, como decir que “existe un 70% de probabilidad de que mañana llueva”. [@bhattarai2025]
 
@@ -48,11 +46,18 @@ Donde $P(H)$ es la probabilidad previa de la hipótesis, $P(E|H)$ es la probabil
 
 Una red bayesiana es un modelo gráfico probabilístico que utiliza un grafo acíclico dirigido (DAG, por sus siglas en inglés, Directed Acyclic Graph) para describir un conjunto de variables y sus relaciones condicionales . Las redes bayesianas funcionan para pronosticar un evento que ya ha ocurrido y predecir la probabilidad de que el factor contribuyente esté entre varias causas conocidas.
 
+## Metodología    
+
 Formalmente, una red bayesiana se define como el par $(G,P)$, donde $G=(V,E)$ es un DAG cuyos nodos $V=\{X_1,X_2,…,X_n\}$, corresponden a las variables de interés y los arcos $E$ representan dependencias directas, mientras que $P$ es el conjunto de distribuciones de probabilidad condicional asociadas a cada nodo. La probabilidad conjunta de todas las variables se factoriza como:
 
 \begin{equation}
 P(X_1, X_2, \dots, X_n) = \prod_{i=1}^{n} P(X_i | \text{Parents}(X_i))
 \end{equation}
+
+Esta estructura permite analizar relaciones de dependencia complejas, realizar inferencias sobre escenarios hipotéticos y evaluar cómo distintos factores individuales y contextuales influyen en los patrones de transporte en la ZMVM.
+
+Las redes bayesianas multinomiales ofrecen una herramienta poderosa para modelar interacciones probabilísticas entre variables, permitiendo no sólo estimar la probabilidad de determinados comportamientos de viaje, sino también evaluar cómo cambian dichas probabilidades bajo distintos escenarios.
+
 
 ## Apéndice A
 
