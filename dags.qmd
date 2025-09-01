@@ -151,14 +151,16 @@ flowchart TD
     d --> h
     tt --> h
 ```
+
 **Query 1**
+
 ```{r}
 prob_mujer <- cpquery(fitted_q12,
-                      event = (tipoTransporte == "Publico"),
-                      evidence = (sexo == "Mujer"))
+                      event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")),
+                      evidence = (sexo == "Mujer"), n = 10^6)
 
 prob_hombre <- cpquery(fitted_q12,
-                       event = (tipoTransporte == "Publico"),
+                       event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")),
                        evidence = (sexo == "Hombre"))
 
 prob_mujer
@@ -166,18 +168,19 @@ prob_hombre
 
 ```
 
-
 **Query 2**
+
 ```{r}
 prob_adulto_bajo <- cpquery(fitted_q12,
-                      event = ( masDeUnCarro == "Si"),
-                      evidence = (edad == "Adulto joven") & (estrato == "Bajo"))
+                      event = ((masDeUnCarro == "Si") | (tipoTransporte == "Privado") | (tipoTransporte == "Publico y privado")),
+                      evidence = ((edad == "Adulto joven") & (estrato == "Bajo")))
 
 
 prob_adulto_bajo
 ```
 
 **Query 3**
+
 ```{r}
 prob_viaje_habil <- cpquery(fitted_q34,
         event = (diaViaje == "Entre semana"),
@@ -190,18 +193,20 @@ prob_viaje_no_habil <- cpquery(fitted_q34,
 prob_viaje_habil
 prob_viaje_no_habil
 ```
+
 viajan mas en dias habiles
 
 **Query 4**
+
 ```{r}
 
 p_pico <- cpquery(fitted_q34, 
-                  event = (tipoTransporte == "Publico"), 
+                  event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")), 
                   evidence = (horaPico == "Si"))
 
 
 p_no_pico <- cpquery(fitted_q34, 
-                     event = (tipoTransporte == "Publico"), 
+                     event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")), 
                      evidence = (horaPico == "No"))
 
 p_pico
