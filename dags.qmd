@@ -161,7 +161,7 @@ prob_mujer <- cpquery(fitted_q12,
 
 prob_hombre <- cpquery(fitted_q12,
                        event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")),
-                       evidence = (sexo == "Hombre"))
+                       evidence = (sexo == "Hombre"), n = 10^6)
 
 prob_mujer
 prob_hombre
@@ -173,7 +173,7 @@ prob_hombre
 ```{r}
 prob_adulto_bajo <- cpquery(fitted_q12,
                       event = ((masDeUnCarro == "Si") | (tipoTransporte == "Privado") | (tipoTransporte == "Publico y privado")),
-                      evidence = ((edad == "Adulto joven") & (estrato == "Bajo")))
+                      evidence = ((edad == "Adulto joven") & (estrato == "Bajo")), n = 10^6)
 
 
 prob_adulto_bajo
@@ -184,11 +184,11 @@ prob_adulto_bajo
 ```{r}
 prob_viaje_habil <- cpquery(fitted_q34,
         event = (diaViaje == "Entre semana"),
-        evidence = (estrato == "Bajo"))
+        evidence = (estrato == "Bajo"), n = 10^6)
 
 prob_viaje_no_habil <- cpquery(fitted_q34,
         event = (diaViaje == "Sabado"),
-        evidence = (estrato == "Bajo"))
+        evidence = (estrato == "Bajo"), n = 10^6)
 
 prob_viaje_habil
 prob_viaje_no_habil
@@ -202,12 +202,12 @@ viajan mas en dias habiles
 
 p_pico <- cpquery(fitted_q34, 
                   event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")), 
-                  evidence = (horaPico == "Si"))
+                  evidence = (horaPico == "Si"), n = 10^6)
 
 
 p_no_pico <- cpquery(fitted_q34, 
                      event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")), 
-                     evidence = (horaPico == "No"))
+                     evidence = (horaPico == "No"), n = 10^6)
 
 p_pico
 p_no_pico

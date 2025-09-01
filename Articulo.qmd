@@ -86,6 +86,102 @@ A pesar de que el algoritmo de hill climbing genera un DAG óptimo respecto a la
 
 Una vez habiendo seleccionado los DAGs óptimos para cada conjunto de datos, se responderán las preguntas primero estableciendo las probabilidades esperadas, con las cuales se realizará inferencia exacta o aproximada, dependiendo del caso. Si se puede obtener una probabilidad directamente de la red bayesiana generada, se realizará esto. En caso contrario, se estimará la probabilidad utilizando el método de Monte Carlo, realizando múltiples simulaciones del modelo que se resumirán en el estimador de interés. Para ello, se utilizará el algoritmo logic sampling, el cual simula observaciones de la red bayesiana que son independientes entre sí, y estima la probabilidad con la cantidad de observaciones que cumplen el evento sobre la cantidad de observaciones que cumplen con la evidencia. [@scutari2021bayesian]
 
+## Aplicación
+
+### Preprocesamiento de los datos
+
+Previo a implementar las propuestas de los DAGs y determinar el mejor modelo para responder a las preguntas, se realizó primeramente la limpieza de los datos de la encuesta del INEGI. Para ello, se generó primero un archivo en donde se encuentran las variables de interés de las primeras dos preguntas, las cuales son:
+  * `sexo`: El sexo de la persona encuestada.
+  * `edad`: El rango de edad de la persona encuestada.
+  * `tipoTransporte`: Indica si la persona utilizó transporte público, privado, ambos o ninguno para viajar.
+  * `masDeUnCarro`: Indica si la persona cuenta con más de un carro o no.
+  * `estrato`: Indica el estrato sociodemográfico de la persona encuestada.
+  
+El desarrollo de este conjunto de datos es descrito en el Apéndice A. El código para dicho procedimiento es el siguiente:
+
+######################## Insertar codigo
+
+Análogamente, se creó el conjunto de datos para las preguntas 3 y 4, cuyas variables de interés son:
+  * `diaViaje`: Indica si el viaje se llevó a cabo entre semana o en sábado.
+  * `estrato`: Indica el estrato sociodemográfico de la persona que realiza el viaje.
+  * `tipoTransporte`: Indica si durante el viaje se utilizó transporte público, privado, ambos o ninguno.
+  * `horaPico`: Indica si más de la mitad del viaje se realizó en hora pico.
+
+El desarrollo de este conjunto de datos es descrito en el Apéndice B. El código para dicho procedimiento es el siguiente:
+
+######################## Insertar codigo
+
+### Propuestas de DAGs
+
+Primeramente, se presentarán dos propuestas para las dependencias entre variables para las primeras dos preguntas (lo que llevará a una primera propuesta de grafo dirigido):
+
+En esta primera red, se establecen sexo y edad como variables independientes, pues estas dependen totalmente de la persona y no son influenciadas por factores externos. Así mismo, se asumirá que la edad tiene una influencia directa con el estrato socioeconómico pues consideramos que a mayor edad más probable era que exista un patrimonio establecido y con ello un estrato más alto, mientras que el sexo puede tener una influencia debido a las brechas salariales y factores de género. De igual manera, se considerará que el estrato tiene una influencia en si la persona tiene más de un carro, pues con un mejor nivel económico también crece la posibilidad de adquisición de este tipo de bienes. Finalmente, establecimos que tanto el estrato socioeconómico como si la persona tiene más de un carro influyen en el tipo de transporte que se utilizará, pues si se cuenta con la posibilidad económica, es probable que se elija utilizar medios de transporte particulares.
+
+Las relaciones anteriores llevan al siguiente grafo dirigido que será utilizado para la primera red bayesiana:
+
+######################## Insertar codigo para DAG 1
+
+Utilizando esta DAG, podemos factorizar la distribución de probabilidad global de este conjunto de variables de la siguiente manera:
+$$
+\mathbb{P}(sexo,edad,estrato,masDeunCarro,tipoTransporte)=\mathbb{P}(sexo) \,\mathbb{P}(edad)\, \mathbb{P}(estrato|edad,sexo) \\
+\mathbb{P}(masDeUnCarro|estrato) \,\mathbb{P}(tipoTransporte|masDeUnCarro,estrato)
+$$
+
+Así mismo, generamos otra propuesta de relación entre variables. Nuevamente, tanto el sexo como la edad fueron consideradas variables independientes pues dependen únicamente de la persona, así mismo se consideró que el sexo tiene influencia en el estrato por las razones ya mendionadas. Por otro lado, decidimos asumir que además del estrato como factor para tener más de un carro la edad también es un factor influyente. Finalmente, decidimos que el tipo de transporte utilizado depende únicamente de si la persona tiene más de un carro, pues con la adquisición de uno es más probable que se elija la opción de utilizar un transporte privado.
+
+Las relaciones anteriores pueden ser representadas con la siguiente DAG:
+
+######################## Insertar codigo para DAG 2
+
+Con las relaciones propuestas anteriormente la factorización de la distribución global queda de la siguiente manera:
+$$
+\,\mathbb{P}(sexo,edad,estrato,masDeunCarro,tipoTransporte)=\mathbb{P}(sexo) \,\mathbb{P}(edad) \,\mathbb{P}(estrato|sexo) \\
+\,\mathbb{P}(masDeUnCarro|estrato,edad) \,\mathbb{P}(tipoTransporte|masDeUnCarro)
+$$
+
+Para evaluar la eficacia de ambos modelos, es necesario llevar a cabo distintas pruebas. Por ejemplo, para comprobar la significancia de las relaciones entre variables se realizarán pruebas de G^2, equivalentes a la prueba de información mutua mencionada anteriormente. A continuación se presenta el proceso para llevar a cabo las pruebas para evaluar las relaciones propuestas en la primera DAG:
+
+######################## Insertar codigo
+
+Como podemos observar, ya que el p-value de todas las pruebas es menor a nuestro nivel de significancia de 0.05, podemos afirmar que en general las relaciones que habíamos propuesto entre variables están bien planteadas. Por otro lado, a continuación se presentan los resultados de la misma prueba llevada a cabo en la segunda DAG propuesta:
+
+######################## Insertar codigo
+
+Nuevamente, todas las relaciones entre variables que propusimos en un inicio tienen un p-value menor a 0.05, por lo que también podemos afimar que fueron buenas propuestas. Es por esto, que también es necesario llevar a cabo otro tipo de pruebas, como el criterio de información bayesiano (BIC) mencionado con anterioridad. Esta prueba se lleva a cabo de la siguiente manera:
+
+######################## Insertar codigo
+
+Ya que el objetivo del BIC es su maximización, podemos darnos cuenta que el primer modelo propuesto presenta mejor adaptación a los datos presentados al tener un score más alto, por lo que puede ser mejor para su utilización en un cálculo de probabilidades. Sin embargo, estos pueden no ser los mejores, es por esto que de igual manera se hizo uso del algoritmo de hill climbing para generar una nueva DAG. Que busca tener un mejor score en la prueba BIC:
+
+######################## Insertar analisis de DAG hill climbing y respuesta a queries
+
+Por otro lado, a continuación se presentan las dos propuestas de relaciones entre variables para las últimas dos preguntas, que nos permitirán hacer otros dos grafos dirigidos:
+
+Para la primera propuesta, se considera el estrato como una variable independiente, pues como las preguntas que se intentan responder hablan sobre los viajes y no sobre las personas, el estrato del viajante no depende de algún factor externo. Así mismo, se asume que el estrato tiene una influencia directa sobre el tipo de transporte que se utiliza, pues el equipo consideró que a mayor estrato sociodemográfico la probabilidad de continuar utilizando transporte público tiende a disminuir, así mismo, para esta propuesta se asumirá que el mismo estrato tiene una influencia sobre el día de viaje en el que se realizó el viaje, pues con un mayor estrato existe una mayor posibilidad de salir los fines de semana. Finalmente, la última relación que se decidió incluir es la influencia del día del viaje sobre si se realizó en hora pico, debido a los cambios que pueden realizarse en los horarios de la persona durante los días de fin de semana.
+
+Las anteriores relaciones de variables llevan al siguiente diagrama de grafo dirigido:
+
+######################## Insertar codigo para DAG 3
+
+Con lo anterior previamente definido la factorización de la distribución global queda de la siguiente manera:
+$$
+\mathbb{P}(estrato,diaViaje,tipoTransporte,horaPico)=\mathbb{P}(estrato) \,\mathbb{P}(tipoTransporte|estrato) \\
+\,\mathbb{P}(diaViaje|estrato) \,\mathbb{P}(horaPico|diaViaje)
+$$
+
+Así mismo, se realizó otra propuesta de relaciones entre las variables que se presenta a continuación:
+
+Nuevamente, se consideró al estrato como una variable independiente, así como que el día de viaje influye en si se realizó en hora pico, por otro lado, en esta ocasión también se decidió probar el día de viaje como una variable independiente. Finalmente, se consideró que el tipo de transporte depende tanto del estrato, por las mismas razones que en el grafo anterior; como del día, pues por ejemplo puede ser influenciado por factores como el hoy no circula; y si fue realizado en hora pico, ya que decidir no viajar en hora pico puede cambiar la decisión del tipo de transporte a utilizar; por lo que esta variable es dependiente de todas las demás.
+
+Con todas estas relaciones entre variables establecidas llegamos al siguiente grafo dirigido:
+
+######################## Insertar codigo para DAG 4
+
+El grafo anterior nos permite factorizar la distribución global como:
+$$
+\mathbb{P}(estrato,diaViaje,tipoTransporte,horaPico)=\mathbb{P}(estrato) \,\mathbb{P}(diaViaje) \,\mathbb{P}(horaPico|diaViaje) \\
+\,\mathbb{P}(tipoTransporte|estrato,diaViaje,horaPico)
+$$
 
 ## Apéndice A
 
