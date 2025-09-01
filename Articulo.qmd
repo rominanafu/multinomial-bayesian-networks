@@ -12,7 +12,9 @@ bibliography: bibliografia.bib
 
 ## Abstract
 
-Síntesis breve y clara del contenido completo del artículo. Debe incluir el objetivo principal del estudio, la metodología empleada, los resultados más relevantes y las conclusiones principales.
+El presente artículo tiene como finalidad entender con mayor profundidad la dinámica de transporte en la Zona Metropolitana del Valle de México (ZMVM), en donde existe una marcada desigualdad en el acceso a medios de transporte. Esto se realiza a través del desarrollo de redes bayesianas multinomiales, las cuales captan las dependencias entre las diferentes variables en las que la investigación se enfoca, como el sexo, el estrato sociodemográfico, el uso de transporte público o privado, el horario en el que se viaja, entre otras. Se utilizaron datos del Instituto Nacional de Estadística y Geografía (INEGI) en la Encuesta Origen-Destino en Hogares de la ZMVM del 2017, con lo que se propusieron los grafos acíclicos dirigidos que sirven como la estructura de la red bayesiana. Estos grafos fueron comparados entre sí y se optimizó la estructura con el algoritmo de hill climbing, con lo cual se respondieron las consultas con respecto a la dinámica de transporte en la ZMVM. Uno de los resultados más relevantes fue que las mujeres son menos probables a utilizar transporte público a comparación de los hombres, lo cual podría deberse a causas de género, como el acoso. Además, se encontró que el uso del transporte público es menos probable cuando se realiza un viaje en hora pico a comparación de cuando se viaja en una hora no pico. El artículo se encuentra limitado respecto a la definición de algunas de las variables de interés, como el viajar en horario pico, lo cual afecta al resultado de algunas consultas.
+
+**Palabras clave:** Transporte, Zona Metropolitana del Valle de México, estrato sociodemográfico, análisis, redes bayesianas multinomiales, grafo acíclico dirigido, probabilidad.
 
 ## Introducción
 
@@ -569,7 +571,7 @@ Utilizando el identificador del viaje ($id\_via$) en el conjunto de datos del tr
 
 #### Variable `horaPico`
 
-Para determinar si un viaje se llevó a cabo en hora pico o no, se asume que los horarios pico se encuentran entre las $7:30$ y $9:30$ horas, así como entre las $17:30$ y $20:00$ horas @metrocdmx. Con ello, se calculó cuántos minutos del viaje se dieron durante algún horario pico, y se dividió entre el total de minutos que duró el viaje para obtener una proporción del tiempo del viaje que se llevó a cabo en hora pico respecto a la duración total del viaje. En el caso en que el viaje se haya realizado en horario pico más de la mitad de su duración, este se considera que fue en hora pico. En caso contrario, se considera el viaje como no realizado en hora pico.
+Para determinar si un viaje se llevó a cabo en hora pico o no, se asume que los horarios pico se encuentran entre las $7:30$ y $9:30$ horas, así como entre las $17:30$ y $20:00$ horas [@metrocdmx]. Con ello, se calculó cuántos minutos del viaje se dieron durante algún horario pico, y se dividió entre el total de minutos que duró el viaje para obtener una proporción del tiempo del viaje que se llevó a cabo en hora pico respecto a la duración total del viaje. En el caso en que el viaje se haya realizado en horario pico más de la mitad de su duración, este se considera que fue en hora pico. En caso contrario, se considera el viaje como no realizado en hora pico.
 
 Un caso a considerar a la hora de calcular las horas picos es que existen viajes que se terminaron en una hora previa a la hora de inicio, no en una hora posterior. Esto se asume que indica que el viaje se da en dos días, por lo que a la hora de obtener cuánto tiempo del viaje se llevó a cabo en horario pico, se considera primero el tiempo desde el momento del inicio del viaje hasta el fin del día, a lo cual se le agrega el tiempo entre el inicio del día y el momento del fin del viaje.
 
