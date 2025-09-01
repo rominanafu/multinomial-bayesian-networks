@@ -1,0 +1,110 @@
+---
+title: "DAGs"
+format: html
+editor: visual
+---
+
+## DAGS
+
+```{r}
+library(bnlearn)
+data12 = read.csv("q12.csv", stringsAsFactors = TRUE)
+head(data12)
+data34 = read.csv("q34.csv", stringsAsFactors = TRUE)
+head(data34)
+```
+
+```{r}
+dag1 = empty.graph(nodes = c("sexo", "edad", "tipoTransporte", "masDeUnCarro", "estrato"))
+
+
+arc_set = matrix(c("sexo", "estrato",
+                   "edad", "estrato",
+                   "estrato", "masDeUnCarro",
+                   "estrato", "tipoTransporte",
+                   "masDeUnCarro", "tipoTransporte"),
+                 byrow = TRUE, ncol = 2,
+                 dimnames = list(NULL, c("from", "to")))
+
+arcs(dag1) = arc_set
+dag1
+arc.strength(dag1, data = data12, criterion = "mi")
+score(dag1, data = data12, type = "bic")
+```
+
+```{r}
+dag2 = empty.graph(nodes = c("sexo", "edad", "tipoTransporte", "masDeUnCarro", "estrato"))
+
+arc_set2 = matrix(c("sexo", "estrato",
+                   "estrato", "masDeUnCarro",
+                   "edad", "masDeUnCarro",
+                   "masDeUnCarro", "tipoTransporte"),
+                 byrow = TRUE, ncol = 2,
+                 dimnames = list(NULL, c("from", "to")))
+arcs(dag2) = arc_set2
+dag2
+arc.strength(dag2, data = data12, criterion = "mi")
+score(dag2, data = data12, type = "bic")
+```
+
+```{r}
+dag3 = empty.graph(nodes = c("estrato", "diaViaje", "tipoTransporte", "horaPico"))
+
+arc_set3 = matrix(c("estrato", "diaViaje",
+                      "diaViaje", "horaPico",
+                      "estrato", "tipoTransporte"),
+                    byrow = TRUE, ncol = 2,
+                    dimnames = list(NULL, c("from", "to")))
+arcs(dag3) = arc_set3
+dag3
+arc.strength(dag3, data = data34, criterion = "mi")
+score(dag3, data = data34, type = "bic")
+```
+
+```{r}
+dag4 = empty.graph(nodes = c("estrato", "tipoTransporte", "diaViaje", "horaPico"))
+
+arc_set4 = matrix(c("estrato", "tipoTransporte",
+                    "diaViaje", "horaPico",
+                    "diaViaje", "tipoTransporte",
+                    "horaPico", "tipoTransporte"),
+                  byrow = TRUE, ncol = 2,
+                  dimnames = list(NULL, c("from", "to")))
+arcs(dag4) = arc_set4
+dag4
+arc.strength(dag4, data = data34, criterion = "mi")
+score(dag4, data = data34, type = "bic")
+```
+
+```{r}
+best_dag_q12 = hc(data12)
+modelstring(best_dag_q12)
+score(best_dag_q12, data = data12, type = "bic")
+```
+
+```{r}
+best_dag_q34 = hc(data34)
+modelstring(best_dag_q34)
+score(best_dag_q34, data = data34, type = "bic")
+```
+
+```{mermaid}
+flowchart TD
+    s(sexo) --> ed(edad)
+    s --> tt(tipoTransporte)
+    ed --> tt
+    ed --> mc(masDeUnCarro)
+    tt --> mc
+    ed --> e(estrato)
+    tt --> e
+    mc --> e
+```
+```{mermaid}
+flowchart TD
+    e(estrato) --> d(diaViaje)
+    e --> tt(tipoTransporte)
+    d --> tt
+    e --> h(horaPico)
+    d --> h
+    tt --> h
+```
