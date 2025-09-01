@@ -6,13 +6,19 @@ editor: visual
 
 ## DAGS
 
+Importar librería y cargar los datos.
+
 ```{r}
 library(bnlearn)
+#Para la primera query
 data12 = read.csv("q12.csv", stringsAsFactors = TRUE)
-head(data12)
+#Segunda query
 data34 = read.csv("q34.csv", stringsAsFactors = TRUE)
-head(data34)
 ```
+
+### Primera query
+
+Dag propuesta 1
 
 ```{r}
 dag1 = empty.graph(nodes = c("sexo", "edad", "tipoTransporte", "masDeUnCarro", "estrato"))
@@ -28,9 +34,19 @@ arc_set = matrix(c("sexo", "estrato",
 
 arcs(dag1) = arc_set
 dag1
+```
+
+```{r}
 arc.strength(dag1, data = data12, criterion = "mi")
+```
+
+Todos nuestros valores Todas las relaciones de dependencia son significativas
+
+```{r}
 score(dag1, data = data12, type = "bic")
 ```
+
+Dag propuesta 2, para query 1
 
 ```{r}
 dag2 = empty.graph(nodes = c("sexo", "edad", "tipoTransporte", "masDeUnCarro", "estrato"))
@@ -43,7 +59,13 @@ arc_set2 = matrix(c("sexo", "estrato",
                  dimnames = list(NULL, c("from", "to")))
 arcs(dag2) = arc_set2
 dag2
+```
+
+```{r}
 arc.strength(dag2, data = data12, criterion = "mi")
+```
+
+```{r}
 score(dag2, data = data12, type = "bic")
 ```
 
@@ -57,7 +79,13 @@ arc_set3 = matrix(c("estrato", "diaViaje",
                     dimnames = list(NULL, c("from", "to")))
 arcs(dag3) = arc_set3
 dag3
+```
+
+```{r}
 arc.strength(dag3, data = data34, criterion = "mi")
+```
+
+```{r}
 score(dag3, data = data34, type = "bic")
 ```
 
@@ -72,19 +100,31 @@ arc_set4 = matrix(c("estrato", "tipoTransporte",
                   dimnames = list(NULL, c("from", "to")))
 arcs(dag4) = arc_set4
 dag4
+```
+
+```{r}
 arc.strength(dag4, data = data34, criterion = "mi")
+```
+
+```{r}
 score(dag4, data = data34, type = "bic")
 ```
 
 ```{r}
 best_dag_q12 = hc(data12)
 modelstring(best_dag_q12)
+```
+
+```{r}
 score(best_dag_q12, data = data12, type = "bic")
 ```
 
 ```{r}
 best_dag_q34 = hc(data34)
 modelstring(best_dag_q34)
+```
+
+```{r}
 score(best_dag_q34, data = data34, type = "bic")
 ```
 
@@ -99,6 +139,7 @@ flowchart TD
     tt --> e
     mc --> e
 ```
+
 ```{mermaid}
 flowchart TD
     e(estrato) --> d(diaViaje)
