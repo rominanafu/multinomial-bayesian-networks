@@ -520,6 +520,18 @@ p_no_pico
 
 Finalmente, es de notar que la probabilidad de que un viaje en transporte público se haya realizado en hora pico es menor a si lo fue en horas de menor tráfico. Esto puede ser debido al gran margen de horas que existe fuera del horario considerado, a que en las horas pico la gente prefiera utilizar transportes privados, o a la simplificación que implica la discretización de si el viaje fue realizado en este horario. Así mismo, puede que específicamente las horas pico investigadas no apliquen a los datos de la encuesta.
 
+## Conclusiones
+
+La movilidad en la ZMVM es un sistema muy complejo lleno de profundas desigualdades sociales y territoriales. Diariamente, millones de personas invierten una cantidad desproporcionada de su tiempo y recursos en traslados, estudiar la movilidad en la ZMVM implica adentrarse en las dinámicas de segregación espacial e inequidad social que definen la vida cotidiana de más de 20 millones de personas.
+
+En este estudio, observamos que sí podemos encontrar desigualdades socioeconómicas y de género en el transporte urbano. Un ejemplo de ello es que se tiene una menor probabilidad de que una mujer utilice el transporte público respecto a un hombre, sugiriendo que ciertas barreras o riesgos afectan la movilidad de mujeres y hombres de manera distinta.
+
+Para un mejor análisis consideramos la necesidad de manejar cuidadosamente la categorización y discretización de variables, como definir de manera más puntual lo que implica que un viaje se realice en hora pico o tener rangos definidos para discretizar algunas variables como \`edad\`, debido a que durante la discretización se puede perder información relevante o las relaciones entre algunas de las variables pueden ser modificadas.
+
+Adicionalmente, caminar fue considerado como un transporte privado, por lo que se podrían definir diferentes tipos de categorizaciones de transportes privados y públicos para conocer mejor a qué tipo de transporte se está haciendo referencia, ya sea de tipo vehículo terrestre, subterráneo, aéreo, entre otros.
+
+En conjunto, con estas observaciones se puede concluir que la movilidad en la ZMVM no puede entenderse de manera aislada, sino como el resultado de la interacción de múltiples factores. Los datos aquí analizados ofrecen una gran cantidad de información que puede servir para entender de mejor manera la dinámica del transporte que se tiene en esta zona, y un análisis más profundo de ellos puede llevar a observar cómo se acentúan las desigualdades en el sector transporte y a una posterior toma de acción en este rubro.
+
 ## Apéndice A {#apéndice-a}
 
 El primer set de datos que se generó contiene las variables de interés relacionadas a las primeras dos preguntas, las cuales incluyen `sexo`, `tipoTransporte`, `masDeUnCarro`, `edad` y `estrato.` Para ello, se obtuvieron las columnas de $sexo$ y $edad$ desde el archivo *tviaje_eod2017/conjunto_de_datos/tviaje.csv*.
