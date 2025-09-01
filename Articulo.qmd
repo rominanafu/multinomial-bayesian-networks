@@ -58,6 +58,34 @@ Esta estructura permite analizar relaciones de dependencia complejas, realizar i
 
 Las redes bayesianas multinomiales ofrecen una herramienta poderosa para modelar interacciones probabilísticas entre variables, permitiendo no sólo estimar la probabilidad de determinados comportamientos de viaje, sino también evaluar cómo cambian dichas probabilidades bajo distintos escenarios.
 
+Para dar respuesta a las preguntas, se trabajará con información proveniente de distintos módulos de la encuesta, de los cuales se extraerán variables clave, estas son: sexo, edad, estrato sociodemográfico, número de automóviles disponibles, clasificación del día y hora del viaje, así como el medio de transporte empleado. El análisis busca identificar dependencias significativas entre estas variables y aportar evidencia sobre cómo factores individuales y contextuales inciden en la movilidad dentro de la ZMVM.
+
+Para crear los modelos que se presentarán posteriormente, se identificaron las siguientes variables de interés a partir de las preguntas dadas.
+
+* `sexo`: Mujer, Hombre
+* `tipoTransporte`: Ninguno, Publico, Privado, Publico y privado
+* `masDeUnCarro`: No, Si
+* `edad`: Joven, Adulto joven, Adulto, Adulto mayor
+* `estrato`: Bajo, Medio bajo, Medio alto, Alto
+* `diaViaje`: Entre semana, Sabado
+* `horaPico`: No, Si
+
+Es de notar, que las primeras dos preguntas tratan sobre las personas que realizaron los viajes, mientras que las últimas dos hablan sobre los viajes como tal, y dado que una persona puede tener varios viajes registrados, se crearán dos bases de datos desde la base original. En la primera, cada registro corresponde a una persona, mientras que en la segunda, cada registro corresponde a un viaje.
+
+Lo anterior implica que las variables dentro de cada base de datos pueden diferir, pues por ejemplo, si un viaje se realizó en hora pico solamente tiene sentido en una base de datos sobre viajes, no sobre personas (como se mencionó, una persona puede tener varios viajes, con solamente algunos realizados durante hora pico). Las variables que se utilizarán para las primeras dos preguntas son: `sexo`, `edad`, `estrato`, `tipoTransporte` y `masDeUnCarro`; el proceso para obtenerlas se puede consultar en el [Apéndice A](#apéndice-a). Por otro lado, las variables para responder las últimas dos preguntas son: tipoTransporte, estrato, diaViaje y horasPico, el proceso de su obtención se encuentra en el [Apéndice B](#apéndice-b).
+
+Habiendo identificado las variables de interés y procesado de datos, se realizarán dos propuestas de DAGs para cada base de datos, con sus respectivas variables. Estos grafos representan las relaciones de dependencia que se considera intuitivamente podrían existir entre las variables.
+
+Con cada una de las DAGs propuestas, se generará una red bayesiana, con la cual se realizarán pruebas de independencia condicional para cada arco. Esto permitirá determinar la significancia de las relaciones propuestas entre las variables, así como ver cuál de las redes representa un mejor ajuste para los datos.
+
+La prueba de independencia condicional que se utilizará para probar la significancia de un arco entre dos variables de los grafos estará basada en el criterio de información mutua, la cual mide qué tanta información es compartida entre dos nodos, de la librería de bnlearn de R. [@JSSv105i08]
+
+Posteriormente, se generará una DAG óptima para cada base de datos con el algoritmo de hill climbing. Este algoritmo busca optimizar un criterio dado, mientras elimina y agrega un arco a la vez, escogiendo el movimiento que represente la mayor mejora del criterio. El criterio a maximizar será el de información bayesiano (BIC), al ser este un criterio empleado para la selección del mejor modelo entre una cantidad finita de modelos, considerando la verosimilitud y la complejidad de los modelos. [@scutari2021bayesian]
+
+A pesar de que el algoritmo de hill climbing genera un DAG óptimo respecto a la métrica del BIC, es necesario considerar la pertinencia de las relaciones que genera, ya que este no conoce el contexto de las variables o lo que representan y podría poner una relación que no tiene sentido.
+
+Una vez habiendo seleccionado los DAGs óptimos para cada conjunto de datos, se responderán las preguntas primero estableciendo las probabilidades esperadas, con las cuales se realizará inferencia exacta o aproximada, dependiendo del caso. Si se puede obtener una probabilidad directamente de la red bayesiana generada, se realizará esto. En caso contrario, se estimará la probabilidad utilizando el método de Monte Carlo, realizando múltiples simulaciones del modelo que se resumirán en el estimador de interés. Para ello, se utilizará el algoritmo logic sampling, el cual simula observaciones de la red bayesiana que son independientes entre sí, y estima la probabilidad con la cantidad de observaciones que cumplen el evento sobre la cantidad de observaciones que cumplen con la evidencia. [@scutari2021bayesian]
+
 
 ## Apéndice A
 
