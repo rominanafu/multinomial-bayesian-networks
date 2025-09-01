@@ -470,7 +470,7 @@ prob_mujer
 prob_hombre
 ```
 
-Puede verse que la probabilidad de que una mujer utilice transporte público es menor respecto a la de un hombre con un 49% y 52% respectivamente. Esto podría indicar que las mujeres pueden tener una mayor tendencia a buscar alternativas al transporte público, que podrían ser debido a causas de género como el acoso, inseguridad, etc.
+Puede verse que la probabilidad de que una mujer utilice transporte público es menor respecto a la de un hombre con un 0.49 y 0.52 respectivamente. Esto podría indicar que las mujeres pueden tener una mayor tendencia a buscar alternativas al transporte público, que podrían ser debido a causas de género como el acoso, inseguridad, etc.
 
 El código para la segunda pregunta es el siguiente:
 
@@ -483,7 +483,7 @@ prob_adulto_bajo <- cpquery(fitted_q12,
 prob_adulto_bajo
 ```
 
-Como puede observarse, la probabilidad de que un hombre entre 20 y 45 años con estrato sociodemográfico bajo tenga al menos un carro o utilice transporte privado es de aproximadamente el 90%, lo que a primera vista podría resultar contraintuitivo debido al estrato del que se está hablando, sin embargo, también debe tomarse en cuenta que con un viaje que la persona haya realizado en transporte privado, la persona ya entra dentro de este porcentaje.
+Como puede observarse, la probabilidad de que un hombre entre 20 y 45 años con estrato sociodemográfico bajo tenga al menos un carro o utilice transporte privado es de aproximadamente el 0.90, lo que a primera vista podría resultar contraintuitivo debido al estrato del que se está hablando, sin embargo, también debe tomarse en cuenta que con un viaje que la persona haya realizado en transporte privado, la persona ya entra dentro de este porcentaje.
 
 Ahora, para responder la tercera pregunta realizamos el siguiente código:
 
