@@ -446,7 +446,77 @@ Observamos que las estructuras del algoritmo presentan un mejor puntaje BIC, ind
 
 Pese a que el algoritmo generó el DAG que mejor se ajusta a los datos, es importante revisar la coherencia de las relaciones planteadas. En este caso, aparece una conexión entre sexo y edad, la cual no necesariamente tiene sentido.Por otro lado, podemos encontrar la relación de edad y más de un carro que incluimos en una de nuestras propuestas, reafirmando la decisión.
 
-En este caso, el algoritmo generó un DAG en el que estrato influye en día de viaje y hora pico, y estas a su vez se relacionan con el tipo de transporte. A diferencia del ejemplo anterior, no encontramos inconsistencias lógicas en las conexiones, ya que las relaciones pueden explicarse desde el contexto de la movilidad. Podemos observar que esta DAG es muy parecida a la propuesta, tenemos las mismas relaciones pero el algoritmo encontró una más entre el estrato y la variable de horaPico
+En este caso, el algoritmo generó un DAG en el que estrato influye en día de viaje y hora pico, y estas a su vez se relacionan con el tipo de transporte. A diferencia del ejemplo anterior, no encontramos inconsistencias lógicas en las conexiones, ya que las relaciones pueden explicarse desde el contexto de la movilidad. Podemos observar que esta DAG es muy parecida a la propuesta, tenemos las mismas relaciones pero el algoritmo encontró una más entre el estrato y la variable de horaPico.
+
+Finalmente, con estos modelo, se pueden responder las preguntas planteadas en un inicio:
+
+```{r}
+# Ajustamos las redes a los datos
+fitted_q12 <- bn.fit(best_dag_q12, data = data12)
+fitted_q34 <- bn.fit(best_dag_q34, data = data34)
+
+# Query 1
+prob_mujer <- cpquery(fitted_q12,
+                      event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")),
+                      evidence = (sexo == "Mujer"), n = 10^6)
+
+prob_hombre <- cpquery(fitted_q12,
+                       event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")),
+                       evidence = (sexo == "Hombre"), n = 10^6)
+
+prob_mujer
+prob_hombre
+```
+
+Puede verse que la probabilidad de que una mujer utilice transporte público es menor respecto a la de un hombre con un 49% y 52% respectivamente. Esto podría indicar que las mujeres pueden tener una mayor tendencia a buscar alternativas al transporte público, que podrían ser debido a causas de género como el acoso, inseguridad, etc.
+
+El código para la segunda pregunta es el siguiente:
+
+```{r}
+prob_adulto_bajo <- cpquery(fitted_q12,
+                      event = ((masDeUnCarro == "Si") | (tipoTransporte == "Privado") | (tipoTransporte == "Publico y privado")),
+                      evidence = ((edad == "Adulto joven") & (estrato == "Bajo")), n = 10^6)
+
+
+prob_adulto_bajo
+```
+
+Como puede observarse, la probabilidad de que un hombre entre 20 y 45 años con estrato sociodemográfico bajo tenga al menos un carro o utilice transporte privado es de aproximadamente el 90%, lo que a primera vista podría resultar contraintuitivo debido al estrato del que se está hablando, sin embargo, también debe tomarse en cuenta que con un viaje que la persona haya realizado en transporte privado, la persona ya entra dentro de este porcentaje.
+
+Ahora, para responder la tercera pregunta realizamos el siguiente código:
+
+```{r}
+prob_viaje_habil <- cpquery(fitted_q34,
+        event = (diaViaje == "Entre semana"),
+        evidence = (estrato == "Bajo"), n = 10^6)
+
+prob_viaje_no_habil <- cpquery(fitted_q34,
+        event = (diaViaje == "Sabado"),
+        evidence = (estrato == "Bajo"), n = 10^6)
+
+prob_viaje_habil
+prob_viaje_no_habil
+```
+
+Es evidente que la probabilidad de un viaje entre semana resultó ser mayor que la de un viaje en fin de semana, esto puede ser en general debido a la cantidad de días que se consideran entre semana contra solo el sábado. Aunque, sí es de resaltar que definitivamente hay una diferencia entre la cantidad de viajes que hay este día contra las que hay un solo día entre semana, lo que puede ser debido a que además de viajes realizados por trabajo, también pueden sumarse los que son debido a actividades de ocio.
+
+Finalmente, la cuarta pregunta la podemos responder con la siguiente query:
+
+```{r}
+p_pico <- cpquery(fitted_q34, 
+                  event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")), 
+                  evidence = (horaPico == "Si"), n = 10^6)
+
+
+p_no_pico <- cpquery(fitted_q34, 
+                     event = ((tipoTransporte == "Publico") | (tipoTransporte == "Publico y privado")), 
+                     evidence = (horaPico == "No"), n = 10^6)
+
+p_pico
+p_no_pico
+```
+
+Finalmente, es de notar que la probabilidad de que un viaje en transporte público se haya realizado en hora pico es menor a si lo fue en horas de menor tráfico. Esto puede ser debido al gran margen de horas que existe fuera del horario considerado, a que en las horas pico la gente prefiera utilizar transportes privados, o a la simplificación que implica la discretización de si el viaje fue realizado en este horario. Así mismo, puede que específicamente las horas pico investigadas no apliquen a los datos de la encuesta.
 
 ## Apéndice A {#apéndice-a}
 
